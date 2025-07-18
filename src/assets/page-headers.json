@@ -1,0 +1,58 @@
+{
+  "home": {
+    "title": "Welcome to Health Charity",
+    "description": "Your trusted partner in providing healthcare support to those in need."
+  },
+  "resources": {
+    "title": "Resources",
+    "description": "Find helpful resources and information."
+  },
+  "food-service": {
+    "title": "Food Service",
+    "description": "Access to nutritious food and meals."
+  },
+  "housing-service": {
+    "title": "Housing Service",
+    "description": "Support for finding safe and affordable housing."
+  },
+  "medical-service": {
+    "title": "Medical Service",
+    "description": "Comprehensive medical care and support."
+  },
+  "login": {
+    "title": "Login",
+    "description": "Access your account."
+  },
+  "register": {
+    "title": "Register",
+    "description": "Create a new account."
+  },
+  "aboutus": {
+    "title": "About Us",
+    "description": "Learn more about our mission, story, and partners."
+  },
+  "donate": {
+    "title": "Donate",
+    "description": "Support our cause by making a donation."
+  },
+  "volunteering": {
+    "title": "Volunteering",
+    "description": "Join our team of dedicated volunteers."
+  },
+  "emergency-help": {
+    "title": "Emergency Help",
+    "description": "Immediate assistance for urgent needs."
+  },
+  "career-assistance": {
+    "title": "Career Assistance",
+    "description": "Guidance and support for your career path."
+  },
+  "volunteer-hub": {
+    "title": "Volunteer Hub",
+    "description": "A central place for our volunteers."
+  },
+  "profile": {
+    "title": "User Profile",
+    "description": "View and edit your personal information."
+  }
+}

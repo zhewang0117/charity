@@ -1,0 +1,32 @@
+{
+  "locations": [
+    "Melbourne CBD",
+    "South Melbourne",
+    "North Melbourne",
+    "East Melbourne",
+    "West Melbourne"
+  ],
+  "activities": [
+    {
+      "id": 1,
+      "title": "New Immigrant Welcome Event",
+      "location": "Melbourne CBD",
+      "date": "2024-01-15",
+      "description": "Help welcome new immigrants and provide orientation support."
+    },
+    {
+      "id": 2,
+      "title": "English Language Workshop",
+      "location": "South Melbourne",
+      "date": "2024-01-20",
+      "description": "Assist in teaching basic English to new immigrants."
+    },
+    {
+      "id": 3,
+      "title": "Cultural Integration Program",
+      "location": "North Melbourne",
+      "date": "2024-01-25",
+      "description": "Help organize and facilitate cultural exchange activities."
+    }
+  ]
+}

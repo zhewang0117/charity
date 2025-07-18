@@ -1,0 +1,95 @@
+<template>
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-header d-flex justify-content-center">
+          <h3>Login</h3>
+        </div>
+        <div class="card-body">
+          <form @submit.prevent="submitForm">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email"
+                v-model="form.email"
+                :class="{ 'is-invalid': errors.email }"
+              >
+              <div class="invalid-feedback">{{ errors.email }}</div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input 
+                type="password" 
+                class="form-control" 
+                id="password"
+                v-model="form.password"
+                :class="{ 'is-invalid': errors.password }"
+              >
+              <div class="invalid-feedback">{{ errors.password }}</div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+            
+            <div v-if="loginError" class="alert alert-danger mt-3">
+              {{ loginError }}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/store'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const form = ref({
+  email: '',
+  password: ''
+})
+const errors = ref({})
+const loginError = ref('')
+
+const validate = () => {
+  errors.value = {}
+  let isValid = true
+  
+  if (!form.value.email) {
+    errors.value.email = 'Email is required'
+    isValid = false
+  } else if (!isValidEmail(form.value.email)) {
+    errors.value.email = 'Email is invalid'
+    isValid = false
+  }
+  
+  if (!form.value.password) {
+    errors.value.password = 'Password is required'
+    isValid = false
+  }
+  
+  return isValid
+}
+
+const isValidEmail = (email) => {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  return re.test(email)
+}
+
+const submitForm = () => {
+  if (validate()) {
+    if (authStore.login(form.value.email, form.value.password)) {
+      router.push('/')
+    } else {
+      loginError.value = 'Invalid email or password'
+    }
+  }
+}
+</script>
