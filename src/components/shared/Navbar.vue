@@ -31,15 +31,17 @@
           <li class="nav-item" v-if="isAuthenticated && user.role === 'volunteer'">
             <router-link class="nav-link" to="/volunteer-hub">VOLUNTEER HUB</router-link>
           </li>
-           <li class="nav-item">
-            <router-link class="nav-link" to="/aboutus">ABOUT US</router-link>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="aboutUsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              ABOUT US
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="aboutUsDropdown">
+              <li><router-link class="dropdown-item" to="/staff">Staff</router-link></li>
+            </ul>
           </li>
         </ul>
         <ul class="navbar-nav">
           <template v-if="isAuthenticated">
-            <li class="nav-item">
-              <router-link class="nav-link" to="/volunteers">Volunteers</router-link>
-            </li>
             <li class="nav-item">
               <span class="nav-link">Welcome, {{ user.name }}</span>
             </li>
@@ -57,11 +59,16 @@
               </li>
             </div>
           </template>
-           <template v-if="isAuthenticated">
-            <li class="nav-item">
-              <router-link class="nav-link" to="/profile" title="My Home">&#x1F464;</router-link>
-            </li>
-          </template>
+          <!-- 个人主页图标始终显示，未登录时变灰且不可跳转 -->
+          <li class="nav-item">
+            <router-link
+              class="nav-link"
+              to="/profile"
+              title="My Home"
+              :class="isAuthenticated ? 'active-profile-icon' : 'disabled-profile-icon'"
+              @click.prevent="!isAuthenticated ? preventProfile : null"
+            >&#x1F464;</router-link>
+          </li>
         </ul>
       </div>
     </div>
@@ -103,6 +110,11 @@ const user = computed(() => authStore.user)
 const logout = () => {
   authStore.logout()
   router.push('/login')
+}
+
+const preventProfile = () => {
+  // 未登录时阻止跳转，可弹窗或提示
+  // alert('请先登录以访问个人主页');
 }
 </script>
 
@@ -169,5 +181,18 @@ const logout = () => {
 
 .container {
   align-items: flex-start !important;
+}
+
+.disabled-profile-icon {
+  color: #888 !important;
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.active-profile-icon {
+  color: #fff !important; 
+  opacity: 1;
+  pointer-events: auto;
+  cursor: pointer;
 }
 </style>

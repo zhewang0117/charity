@@ -1,0 +1,22 @@
+{
+  "title": "Our Staff",
+  "description": "Meet our dedicated team.",
+  "volunteersTitle": "Volunteers",
+  "volunteers": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "role": "Teacher"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "role": "Assistant"
+    },
+    {
+      "id": 3,
+      "name": "David Johnson",
+      "role": "Cleaner"
+    }
+  ]
+}

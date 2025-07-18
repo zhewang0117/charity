@@ -59,6 +59,12 @@ const routes = [
     component: () => import('@/components/views/AboutUs.vue')
   },
   {
+    path: '/staff',
+    name: 'staff',
+    component: () => import('@/components/views/Staff.vue'),
+    meta: { requiresAuth: true } // 根据需要添加
+  },
+  {
     path: '/donate',
     name: 'donate',
     component: () => import('@/components/views/Donate.vue'),
