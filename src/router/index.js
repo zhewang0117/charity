@@ -107,17 +107,23 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/volunteers',
-    name: 'volunteers',
-    component: () => import('@/components/views/Volunteers.vue'),
+    path: '/support-us',
+    name: 'support-us',
+    component: () => import('@/components/views/SupportUs.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/activities',
+    name: 'admin-activities',
+    component: () => import('@/components/views/AdminActivities.vue'),
+    meta: { requiresAuth: true, requiredRole: 'admin' }
+  },
+  {
+    path: '/activity/:id',
+    name: 'ActivityDetails',
+    component: () => import('@/components/views/ActivityDetails.vue'),
     meta: { requiresAuth: true }
   }
-  // {
-  //   path: '/profile',
-  //   name: 'profile',
-  //   component: () => import('@/components/auth/Profile.vue'),
-  //   meta: { requiresAuth: true }
-  // }
 ]
 
 const router = createRouter({

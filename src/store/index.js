@@ -1,4 +1,5 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
+import activities from '@/assets/volunteer-activities.json';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -17,10 +18,8 @@ export const useAuthStore = defineStore('auth', {
       { id: 'v1', name: 'John Doe', ratings: [] },
       { id: 'v2', name: 'Jane Smith', ratings: [] }
     ],
-    serviceRecords: JSON.parse(localStorage.getItem('serviceRecords')) || [
-      { id: 's1', userId: '1', volunteerId: 'v1', activityTitle: 'New Immigrant Welcome Event', status: 'pending' },
-      { id: 's2', userId: '1', volunteerId: 'v2', activityTitle: 'English Language Workshop', status: 'pending' }
-    ]
+    serviceRecords: JSON.parse(localStorage.getItem('serviceRecords') || '[]'),
+    volunteerActivities: activities
   }),
   getters: {
     isAuthenticated: (state) => !!state.user,
@@ -105,6 +104,24 @@ export const useAuthStore = defineStore('auth', {
 
     saveServiceRecordsToLocalStorage() {
       localStorage.setItem('serviceRecords', JSON.stringify(this.serviceRecords));
+    },
+
+
+
+    completeService(userId, volunteerId, activityId) {
+      const activity = this.volunteerActivities.find(a => a.id === activityId);
+      if (activity) {
+        const serviceRecord = {
+          id: `s${Date.now()}`,
+          userId: userId,
+          volunteerId: volunteerId,
+          activityTitle: activity.name,
+          status: 'pending',
+          date: new Date().toISOString().split('T')[0]
+        };
+        this.serviceRecords.push(serviceRecord);
+        this.saveServiceRecordsToLocalStorage();
+      }
     },
 
     updateUserProfile(userData) {

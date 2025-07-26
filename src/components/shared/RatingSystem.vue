@@ -1,109 +1,89 @@
 <template>
   <div class="rating-system">
-    <h5>评分系统</h5>
-    
-    <!-- 显示平均分 -->
-    <div class="average-rating mb-3">
-      <strong>平均评分:</strong>
-      <span class="rating-stars">
-        <i v-for="star in 5" :key="star" 
-           :class="['bi', star <= Math.floor(average) ? 'bi-star-fill' : 'bi-star']"></i>
-      </span>
-      <span>({{ average.toFixed(1) }})</span>
-      <span class="ms-2">基于 {{ ratingsCount }} 个评价</span>
-    </div>
-    
-    <!-- 用户评分 -->
-    <div v-if="userCanRate" class="user-rating">
-      <p>您的评分:</p>
-      <div class="star-rating">
-        <i v-for="star in 5" :key="star" 
-           :class="['bi', star <= userRating ? 'bi-star-fill' : 'bi-star']"
-           @click="setRating(star)"
-           @mouseover="hoverRating = star"
-           @mouseleave="hoverRating = 0"></i>
+    <div v-if="!disabled">
+      <h5>Rate this Activity</h5>
+      <div v-for="(rating, aspect) in ratings" :key="aspect" class="rating-aspect">
+        <label>{{ aspect }}:</label>
+        <div class="stars">
+          <span v-for="star in 5" :key="star" @click="setRating(aspect, star)" :class="{ 'filled': star <= rating }">
+            ★
+          </span>
+        </div>
       </div>
-      <button v-if="userRating > 0" class="btn btn-sm btn-primary mt-2" @click="submitRating">
-        提交评分
-      </button>
+      <button @click="submitRatings" class="btn btn-sm btn-primary mt-2">Submit Ratings</button>
     </div>
-    
-    <div v-else-if="isAuthenticated">
-      <p class="text-muted">您已评分</p>
+    <div v-if="disabled">
+      <p>You have already rated this activity.</p>
     </div>
-    <div v-else>
-      <p class="text-muted">请<a href="/login">登录</a>后进行评分</p>
+    <div v-if="averageRating" class="average-rating mt-3">
+        <h5>Overall Average Rating</h5>
+        <ul>
+            <li v-for="(avg, aspect) in averageRating.averages" :key="aspect">
+                {{ aspect }}: {{ avg.toFixed(1) }} / 5
+            </li>
+        </ul>
+        <p><strong>Overall Average:</strong> {{ averageRating.overallAverage.toFixed(1) }} / 5</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useAuthStore } from '@/store'
-import { useResourceStore } from '@/store'
+import { ref, defineEmits, defineProps } from 'vue';
 
 const props = defineProps({
-  resourceId: {
-    type: String,
+  activityId: {
+    type: [String, Number],
     required: true
+  },
+  disabled: {
+    type: Boolean,
+    default: false
+  },
+  averageRating: {
+    type: Object,
+    default: null
   }
-})
+});
 
-const authStore = useAuthStore()
-const resourceStore = useResourceStore()
+const ratings = ref({
+  helpfulness: 0,
+  clarity: 0,
+  friendliness: 0
+});
 
-const userRating = ref(0)
-const hoverRating = ref(0)
-const hasRated = ref(false)
+const emit = defineEmits(['submit']);
 
-// 计算属性
-const isAuthenticated = computed(() => authStore.isAuthenticated)
-const userId = computed(() => authStore.user?.id)
-const resource = computed(() => 
-  resourceStore.resources.find(r => r.id === props.resourceId))
+const setRating = (aspect, value) => {
+  ratings.value[aspect] = value;
+};
 
-const ratings = computed(() => resource.value?.ratings || [])
-const ratingsCount = computed(() => ratings.value.length)
-const average = computed(() => {
-  if (ratingsCount.value === 0) return 0
-  const total = ratings.value.reduce((sum, r) => sum + r.rating, 0)
-  return total / ratingsCount.value
-})
-
-const userCanRate = computed(() => 
-  isAuthenticated.value && 
-  !hasRated.value && 
-  userId.value !== resource.value?.userId
-)
-
-// 设置评分
-const setRating = (rating) => {
-  userRating.value = rating
-}
-
-// 提交评分
-const submitRating = () => {
-  if (userCanRate.value && userRating.value > 0) {
-    resourceStore.addRating(props.resourceId, userRating.value)
-    hasRated.value = true
+const submitRatings = () => {
+  emit('submit', { activityId: props.activityId, ratings: { ...ratings.value } });
+  for (const aspect in ratings.value) {
+    ratings.value[aspect] = 0;
   }
-}
-
-// 检查用户是否已评分
-watch(() => resource.value, (newResource) => {
-  if (newResource && userId.value) {
-    hasRated.value = newResource.ratings.some(r => r.userId === userId.value)
-  }
-}, { immediate: true })
+};
 </script>
 
 <style scoped>
-.star-rating {
+.rating-system {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+.rating-aspect {
+  margin-bottom: 10px;
+}
+.stars {
+  cursor: pointer;
   color: #ffc107;
   font-size: 1.5rem;
-  cursor: pointer;
 }
-.bi-star-fill {
+.stars span {
+  color: #ccc;
+}
+.stars span.filled {
   color: #ffc107;
 }
 </style>

@@ -137,6 +137,7 @@ export default {
 .footer {
   background: linear-gradient(135deg, #2c3e50, #1a2530);
   box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+  padding: 2rem 1rem;
 }
 
 .footer a {
@@ -165,5 +166,25 @@ export default {
 
 hr {
   opacity: 0.2;
+}
+
+@media (max-width: 767.98px) {
+  .footer .col-md-4,
+  .footer .col-md-2,
+  .footer .col-md-3 {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .social-icons {
+    justify-content: center;
+    display: flex;
+  }
+  .text-md-start {
+    text-align: center !important;
+  }
+  .text-md-end {
+    text-align: center !important;
+    margin-top: 1rem;
+  }
 }
 </style>

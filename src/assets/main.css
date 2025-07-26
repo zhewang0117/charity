@@ -1,9 +1,20 @@
 @import './base.css';
 
+/* Responsive breakpoints */
+:root {
+  --breakpoint-xs: 0;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-xxl: 1400px;
+}
+
 #app {
-  max-width: 1280px;
+  width: 100%;
+  max-width: 1600px; /* Add a max-width for very large screens */
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   font-weight: normal;
 }
 
@@ -21,15 +32,51 @@ a,
   }
 }
 
-@media (min-width: 1024px) {
+/* Default mobile-first styles */
+body {
+  display: block;
+}
+
+#app {
+  display: block;
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: var(--breakpoint-sm)) {
+  #app {
+    padding: 1.5rem;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: var(--breakpoint-md)) {
+  #app {
+    padding: 1.8rem;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: var(--breakpoint-lg)) {
   body {
     display: flex;
-    place-items: center;
+    place-items: flex-start; /* Align items to the top */
   }
 
   #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+    padding: 2rem;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: var(--breakpoint-xl)) {
+  #app {
+    padding: 2.5rem;
+  }
+}
+
+/* Extra extra large devices (larger desktops, 1400px and up) */
+@media (min-width: var(--breakpoint-xxl)) {
+  #app {
+    padding: 3rem;
   }
 }

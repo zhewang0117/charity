@@ -227,3 +227,86 @@ export default {
   background-color: #0056b3;
 }
 </style>
+
+<style scoped>
+@media (max-width: 991px) {
+  .volunteer-hub {
+    flex-direction: column;
+    height: auto;
+  }
+  .side-nav {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 10px 0 10px;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    background: #f4f4f4;
+  }
+  .nav-list {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 10px;
+  }
+  .nav-item {
+    padding: 10px 12px;
+    font-size: 1rem;
+    border-radius: 5px 5px 0 0;
+    white-space: nowrap;
+  }
+  .sub-nav {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 10;
+    padding-left: 0;
+    margin-top: 0;
+  }
+  .main-content {
+    padding: 10px;
+  }
+  .filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .activities-list {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .activity-card {
+    padding: 12px;
+    font-size: 0.97rem;
+  }
+}
+
+@media (max-width: 575px) {
+  .side-nav {
+    flex-direction: column;
+    padding: 0 0 10px 0;
+  }
+  .nav-list {
+    flex-direction: column;
+    gap: 0;
+  }
+  .nav-item {
+    border-radius: 0;
+    border-bottom: 1px solid #eee;
+    padding: 10px 8px;
+    font-size: 0.98rem;
+  }
+  .main-content {
+    padding: 6px;
+  }
+  .activity-card {
+    padding: 8px;
+    font-size: 0.95rem;
+  }
+}
+</style>
