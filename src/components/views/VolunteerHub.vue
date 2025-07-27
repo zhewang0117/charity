@@ -1,6 +1,6 @@
 <template>
   <div class="volunteer-hub">
-    <!-- 左侧导航 -->
+    <!-- Left Navigation -->
     <div class="side-nav">
       <ul class="nav-list">
         <li>
@@ -22,7 +22,7 @@
       </ul>
     </div>
 
-    <!-- 中间内容区域 -->
+    <!-- Main Content Area -->
     <div class="main-content">
       <div class="filters">
         <div class="filter-group">
@@ -40,7 +40,7 @@
         </div>
       </div>
 
-      <!-- 活动列表 -->
+      <!-- Activity List -->
       <div class="activities-list">
         <div v-for="activity in filteredActivities" :key="activity.id" class="activity-card">
           <h3>{{ activity.title }}</h3>
@@ -83,11 +83,11 @@ export default {
     },
     selectSubTask(type) {
       console.log('Selected task type:', type)
-      // 这里可以根据选择的任务类型加载相应的数据
+      // Load data based on the selected task type
     },
     selectSection(section) {
       console.log('Selected section:', section)
-      // 这里可以处理资源验证部分的逻辑
+      // Handle logic for the resource validation section
     }
   }
 }

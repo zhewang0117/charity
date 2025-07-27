@@ -33,6 +33,7 @@ export default {
   max-width: 1400px; /* Centered content */
   margin: 0 auto;
   padding: 1.5rem;
+  padding-top: 120px; /* Add padding to offset the fixed navbar */
 }
 
 /* Responsive adjustments */

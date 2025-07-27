@@ -101,7 +101,7 @@
       <hr class="border-secondary my-4">
       <div class="row align-items-center">
         <div class="col-md-6 text-center text-md-start">
-          <p class="mb-0">&copy; {{ currentYear }} Immigrant Health Support. All rights reserved.</p>
+          <p class="mb-0">&copy; {{ currentYear }} CareNexus. All rights reserved.</p>
         </div>
         <div class="col-md-6 text-center text-md-end">
           <ul class="list-inline mb-0">

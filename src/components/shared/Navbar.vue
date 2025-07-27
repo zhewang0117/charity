@@ -86,10 +86,7 @@
         </div>
       </div>
     </nav>
-    <div v-if="pageHeader" class="page-header bg-light p-3">
-      <h3>{{ pageHeader.title }}</h3>
-      <p>{{ pageHeader.description }}</p>
-    </div>
+
   </div>
 </template>
 
@@ -97,25 +94,9 @@
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/store'
 import { useRoute, useRouter } from 'vue-router'
-import pageHeaders from '@/assets/page-headers.json'
-
 const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
-
-const pageHeader = ref(null)
-
-watch(
-  () => route.name,
-  (newName) => {
-    if (newName && pageHeaders[newName]) {
-      pageHeader.value = pageHeaders[newName]
-    } else {
-      pageHeader.value = null
-    }
-  },
-  { immediate: true }
-)
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const user = computed(() => authStore.user)

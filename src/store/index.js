@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import activities from '@/assets/volunteer-activities.json';
+import bcrypt from 'bcryptjs';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -9,7 +10,7 @@ export const useAuthStore = defineStore('auth', {
         id: '1',
         name: 'Admin User',
         email: 'admin@example.com',
-        password: 'hashed_admin123', // Passwords should be hashed
+        password: bcrypt.hashSync('admin123', 10), // Passwords should be hashed
         role: 'admin',
         createdAt: new Date().toISOString()
       }
@@ -27,18 +28,21 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     hashPassword(password) {
-      // In a real app, use a strong hashing algorithm like bcrypt
-      return `hashed_${password}`;
+      return bcrypt.hashSync(password, 10);
     },
     login(email, password) {
-      const hashedPassword = this.hashPassword(password);
-      const user = this.users.find(u => u.email === email && u.password === hashedPassword);
-      if (user) {
+      const user = this.users.find(u => u.email === email);
+      if (user && bcrypt.compareSync(password, user.password)) {
         this.user = user;
         localStorage.setItem('user', JSON.stringify(user));
         return true;
       }
       return false;
+    },
+    sanitizeInput(input) {
+      const temp = document.createElement('div');
+      temp.textContent = input;
+      return temp.innerHTML;
     },
     register(userData) {
       // Check if email already exists
@@ -47,7 +51,8 @@ export const useAuthStore = defineStore('auth', {
       }
       
       const newUser = {
-        ...userData,
+        name: this.sanitizeInput(userData.name),
+        email: this.sanitizeInput(userData.email),
         password: this.hashPassword(userData.password),
         id: Date.now().toString(),
         role: userData.role || 'immigrant',
@@ -127,10 +132,15 @@ export const useAuthStore = defineStore('auth', {
     updateUserProfile(userData) {
       const index = this.users.findIndex(u => u.id === this.user.id)
       if (index !== -1) {
-        this.users[index] = { ...this.users[index], ...userData }
-        this.user = this.users[index]
-        localStorage.setItem('users', JSON.stringify(this.users))
-        localStorage.setItem('user', JSON.stringify(this.user))
+        const sanitizedData = {};
+        if (userData.name) sanitizedData.name = this.sanitizeInput(userData.name);
+        if (userData.email) sanitizedData.email = this.sanitizeInput(userData.email);
+        // Add other fields as needed, ensuring they are sanitized if they are strings
+
+        this.users[index] = { ...this.users[index], ...userData, ...sanitizedData };
+        this.user = this.users[index];
+        localStorage.setItem('users', JSON.stringify(this.users));
+        localStorage.setItem('user', JSON.stringify(this.user));
       }
     }
   }
