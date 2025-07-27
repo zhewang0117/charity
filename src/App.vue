@@ -30,10 +30,10 @@ export default {
 .main-content {
   flex: 1;
   width: 100%;
-  max-width: 1400px; /* Centered content */
+  max-width: 1400px; 
   margin: 0 auto;
   padding: 1.5rem;
-  padding-top: 120px; /* Add padding to offset the fixed navbar */
+  padding-top: 120px; 
 }
 
 /* Responsive adjustments */
