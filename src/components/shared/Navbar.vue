@@ -107,8 +107,7 @@ const logout = () => {
 }
 
 const preventProfile = () => {
-  // 未登录时阻止跳转，可弹窗或提示
-  // alert('请先登录以访问个人主页');
+
 }
 
 const isNavbarCollapsed = ref(true);
@@ -219,7 +218,7 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
-/* 超小屏（<576px）优化 */
+
 @media (max-width: 575.98px) {
   .navbar-brand .logo-main {
     font-size: 1.1rem;
@@ -233,7 +232,6 @@ onUnmounted(() => {
   }
 }
 
-/* 小屏（576-768px）优化 */
 @media (min-width: 576px) and (max-width: 767.98px) {
   .navbar-brand .logo-main {
     font-size: 1.2rem;
@@ -247,7 +245,7 @@ onUnmounted(() => {
   }
 }
 
-/* 中屏（768-992px）优化 */
+
 @media (min-width: 768px) and (max-width: 991.98px) {
   .navbar-brand .logo-main {
     font-size: 1.3rem;
@@ -272,39 +270,38 @@ onUnmounted(() => {
   }
   
   .navbar-brand {
-    margin-right: 0.6rem !important; /* 进一步减小品牌间距 */
+    margin-right: 0.6rem !important; 
     flex-shrink: 0;
-    font-size: 0.95rem !important; /* 略微缩小品牌字体 */
+    font-size: 0.95rem !important; 
   }
   
   .navbar-nav.me-auto .nav-item {
-    margin-right: 0.3rem; /* 极小的导航项间距 */
+    margin-right: 0.3rem; 
   }
   
   .nav-link {
-    padding: 0.25rem 0.4rem !important; /* 更紧凑的内边距 */
-    font-size: 0.85rem !important; /* 进一步缩小字体 */
+    padding: 0.25rem 0.4rem !important; 
+    font-size: 0.85rem !important; 
     white-space: nowrap;
   }
   
   .navbar-nav:not(.me-auto) {
     flex-shrink: 1;
-    max-width: 40%; /* 减小右侧最大宽度比例 */
+    max-width: 40%; 
   }
   
-  /* 仅保留图标，隐藏所有文字标签 */
+ 
   .nav-link i + span,
   .nav-link span {
     display: none;
   }
   
-  /* 如果有图标，调整图标大小 */
+  
   .nav-link i {
-    font-size: 0.9rem; /* 适当大小的图标 */
+    font-size: 0.9rem; 
   }
 }
 
-/* 超大屏（>=1200px）优化 */
 @media (min-width: 1200px) and (max-width: 1399.98px) {
   .navbar-collapse {
     display: flex !important;
@@ -330,7 +327,7 @@ onUnmounted(() => {
   }
 }
 
-/* 超宽屏（>=1400px）优化 */
+
 @media (min-width: 1400px) {
   .navbar-brand {
     margin-right: 4rem !important;
@@ -344,7 +341,6 @@ onUnmounted(() => {
   }
 }
 
-/* 汉堡菜单下拉美化 */
 .navbar-collapse.show {
   background-color: rgba(255, 255, 255, 0.97);
   border-radius: 0.5rem;
