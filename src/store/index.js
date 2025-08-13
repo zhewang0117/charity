@@ -1,20 +1,18 @@
 import { defineStore } from 'pinia';
+import { auth, db } from '@/firebase';
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut,
+  onAuthStateChanged 
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import activities from '@/assets/volunteer-activities.json';
-import bcrypt from 'bcryptjs';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: JSON.parse(localStorage.getItem('user')) || null,
-    users: JSON.parse(localStorage.getItem('users')) || [
-      {
-        id: '1',
-        name: 'Admin User',
-        email: 'admin@example.com',
-        password: bcrypt.hashSync('admin123', 10), // Passwords should be hashed
-        role: 'admin',
-        createdAt: new Date().toISOString()
-      }
-    ],
+    user: null,
+    isAuthResolved: false, // 新增状态，用于跟踪认证是否完成
     volunteers: JSON.parse(localStorage.getItem('volunteers')) || [
       { id: 'v1', name: 'John Doe', ratings: [] },
       { id: 'v2', name: 'Jane Smith', ratings: [] }
@@ -27,51 +25,98 @@ export const useAuthStore = defineStore('auth', {
     currentUser: (state) => state.user
   },
   actions: {
-    hashPassword(password) {
-      return bcrypt.hashSync(password, 10);
+    async register(userData) {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+        const user = userCredential.user;
+        
+        const userProfile = {
+          name: userData.name,
+          email: userData.email,
+          role: userData.role || 'immigrant',
+          languagePreference: userData.languagePreference || 'en',
+          createdAt: new Date().toISOString()
+        };
+
+        // 增加空值校验
+const sanitizedProfile = Object.fromEntries(
+  Object.entries(userProfile).map(([key, val]) => [key, val || 'N/A'])
+);
+await setDoc(doc(db, 'users', user.uid), sanitizedProfile);
+
+        this.user = { uid: user.uid, ...userProfile };
+        this.isAuthResolved = true; // 设置认证完成标志
+        localStorage.setItem('user', JSON.stringify(this.user));
+        
+        return { success: true, user: this.user };
+      } catch (error) {
+        console.error('Registration Error:', error);
+        return { success: false, message: error.message };
+      }
     },
-    login(email, password) {
-      const user = this.users.find(u => u.email === email);
-      if (user && bcrypt.compareSync(password, user.password)) {
-        this.user = user;
-        localStorage.setItem('user', JSON.stringify(user));
+
+    async login(email, password) {
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          this.user = { 
+  uid: user.uid,
+  email: user.email,
+  name: userDoc.data().name || 'New User',
+  role: userDoc.data().role || 'immigrant',
+  languagePreference: userDoc.data().languagePreference || 'en'
+};
+          localStorage.setItem('user', JSON.stringify(this.user));
+        } else {
+          this.user = { 
+  uid: user.uid, 
+  email: user.email,
+  name: 'New User',
+  role: 'immigrant',
+  languagePreference: 'en'
+}; // Fallback
+          this.isAuthResolved = true;
+          localStorage.setItem('user', JSON.stringify(this.user));
+        }
         return true;
+      } catch (error) {
+        console.error('Login Error:', error);
+        return false;
       }
-      return false;
     },
-    sanitizeInput(input) {
-      const temp = document.createElement('div');
-      temp.textContent = input;
-      return temp.innerHTML;
+
+    async logout() {
+      await signOut(auth);
+      this.user = null;
+      localStorage.removeItem('user');
     },
-    register(userData) {
-      // Check if email already exists
-      if (this.users.some(u => u.email === userData.email)) {
-        return { success: false, message: 'Email already exists' }
-      }
-      
-      const newUser = {
-        name: this.sanitizeInput(userData.name),
-        email: this.sanitizeInput(userData.email),
-        password: this.hashPassword(userData.password),
-        id: Date.now().toString(),
-        role: userData.role || 'immigrant',
-        createdAt: new Date().toISOString()
-      };
-      
-      this.users.push(newUser)
-      this.user = newUser
-      localStorage.setItem('users', JSON.stringify(this.users))
-      localStorage.setItem('user', JSON.stringify(newUser))
-      return { success: true }
+    
+    fetchUser() {
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                if (!this.user || this.user.uid !== user.uid) {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        this.user = { uid: user.uid, ...userDoc.data() };
+        this.isAuthResolved = true;
+                    } else {
+                        this.user = { uid: user.uid, email: user.email };
+                    }
+                    localStorage.setItem('user', JSON.stringify(this.user));
+                }
+            } else {
+                this.user = null;
+                localStorage.removeItem('user');
+            }
+        });
     },
-    logout() {
-      this.user = null
-      localStorage.removeItem('user')
-    },
+
     getPendingRatings() {
       if (!this.user) return [];
-      return this.serviceRecords.filter(record => record.userId === this.user.id && record.status === 'pending');
+      return this.serviceRecords.filter(record => record.userId === this.user.uid && record.status === 'pending');
     },
 
     getVolunteerById(id) {
@@ -81,7 +126,6 @@ export const useAuthStore = defineStore('auth', {
     getVolunteerAverageRating(volunteerId) {
       const volunteer = this.volunteers.find(v => v.id === volunteerId);
       if (!volunteer || volunteer.ratings.length === 0) return 'No ratings yet';
-
       const total = volunteer.ratings.reduce((sum, rating) => sum + rating.score, 0);
       return (total / volunteer.ratings.length).toFixed(1);
     },
@@ -89,16 +133,12 @@ export const useAuthStore = defineStore('auth', {
     submitRating(serviceId, ratings) {
       const record = this.serviceRecords.find(r => r.id === serviceId);
       if (!record) return;
-
       const volunteer = this.volunteers.find(v => v.id === record.volunteerId);
       if (!volunteer) return;
-
       const scores = Object.values(ratings);
       const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
-
       volunteer.ratings.push({ serviceId, score: averageScore, details: ratings });
       record.status = 'completed';
-
       this.saveVolunteersToLocalStorage();
       this.saveServiceRecordsToLocalStorage();
     },
@@ -110,8 +150,6 @@ export const useAuthStore = defineStore('auth', {
     saveServiceRecordsToLocalStorage() {
       localStorage.setItem('serviceRecords', JSON.stringify(this.serviceRecords));
     },
-
-
 
     completeService(userId, volunteerId, activityId) {
       const activity = this.volunteerActivities.find(a => a.id === activityId);
@@ -129,22 +167,29 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    updateUserProfile(userData) {
-      const index = this.users.findIndex(u => u.id === this.user.id)
-      if (index !== -1) {
-        const sanitizedData = {};
-        if (userData.name) sanitizedData.name = this.sanitizeInput(userData.name);
-        if (userData.email) sanitizedData.email = this.sanitizeInput(userData.email);
-        // Add other fields as needed, ensuring they are sanitized if they are strings
-
-        this.users[index] = { ...this.users[index], ...userData, ...sanitizedData };
-        this.user = this.users[index];
-        localStorage.setItem('users', JSON.stringify(this.users));
-        localStorage.setItem('user', JSON.stringify(this.user));
-      }
-    }
+    async updateUserProfile(userData) {
+        if (!this.user) return;
+        try {
+            const userRef = doc(db, 'users', this.user.uid);
+            const sanitizedData = {};
+            if (userData.name) sanitizedData.name = this.sanitizeInput(userData.name);
+            if (userData.email) sanitizedData.email = this.sanitizeInput(userData.email);
+            
+            await setDoc(userRef, { ...userData, ...sanitizedData }, { merge: true });
+            const updatedDoc = await getDoc(userRef);
+            this.user = { uid: this.user.uid, ...updatedDoc.data() };
+            localStorage.setItem('user', JSON.stringify(this.user));
+        } catch (error) {
+            console.error("Error updating profile: ", error);
+        }
+    },
+    sanitizeInput(input) {
+      const temp = document.createElement('div');
+      temp.textContent = input;
+      return temp.innerHTML;
+    },
   }
-})
+});
 
 export const useResourceStore = defineStore('resources', {
   state: () => ({
@@ -176,7 +221,7 @@ export const useResourceStore = defineStore('resources', {
     addRating(resourceId, rating) {
       const resource = this.resources.find(r => r.id === resourceId)
       if (resource) {
-        const userId = useAuthStore().user.id
+        const userId = useAuthStore().user.uid
         const existingRatingIndex = resource.ratings.findIndex(r => r.userId === userId)
         
         if (existingRatingIndex !== -1) {
@@ -209,7 +254,7 @@ export const useResourceStore = defineStore('resources', {
       return rating ? rating.rating : 0
     }
   }
-})
+});
 
 export const useCommunityStore = defineStore('community', {
   state: () => ({
@@ -241,4 +286,4 @@ export const useCommunityStore = defineStore('community', {
       localStorage.setItem('communityPosts', JSON.stringify(this.posts))
     }
   }
-})
+});

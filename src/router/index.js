@@ -123,7 +123,24 @@ const routes = [
     name: 'ActivityDetails',
     component: () => import('@/components/views/ActivityDetails.vue'),
     meta: { requiresAuth: true }
-  }
+  },
+  {
+    path: '/email',
+    name: 'email',
+    component: () => import('@/components/email/EmailSender.vue'),
+    meta: { requiresAuth: true }
+  {
+      path: '/map',
+      name: 'map',
+      component: () => import('../components/views/MapView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/staff',
+      name: 'staff',
+      component: () => import('../components/views/StaffList.vue'),
+      meta: { requiresAuth: true },
+    },
 ]
 
 const router = createRouter({
@@ -133,16 +150,25 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  
+  console.log(`Navigating from ${from.path} to ${to.path}`);
+  console.log(`authStore.isAuthenticated: ${authStore.isAuthenticated}`);
+  console.log(`authStore.user:`, authStore.user);
+  console.log(`Route meta:`, to.meta);
+
   if (to.matched.some(record => record.meta.requiresAuth)) {
+    console.log('Route requires authentication.');
     if (!authStore.isAuthenticated) {
+      console.log('User not authenticated. Redirecting to login.');
       next({ name: 'login' })
     } else if (to.meta.requiredRole && authStore.user.role !== to.meta.requiredRole) {
+      console.log(`User role ${authStore.user.role} does not match required role ${to.meta.requiredRole}. Redirecting to home.`);
       next({ name: 'home' })
     } else {
+      console.log('User authenticated and has required role (or no role required). Proceeding.');
       next()
     }
   } else {
+    console.log('Route does not require authentication. Proceeding.');
     next()
   }
 })

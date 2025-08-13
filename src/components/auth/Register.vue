@@ -108,207 +108,210 @@
 </template>
 
 <script setup>
+import { ref, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/store';
 
-import { ref, computed, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/store'
-
-const router = useRouter()
-const authStore = useAuthStore()
+const router = useRouter();
+const authStore = useAuthStore();
 
 const form = ref({
   name: '',
   email: '',
   password: '',
   confirmPassword: '',
-  role:''
-})
+  role: ''
+});
 const errors = ref({
   name: null,
   email: null,
   password: null,
   confirmPassword: null,
-  role:null
-})
-const registerError = ref('')
+  role: null
+});
+const registerError = ref('');
 
 // 密码强度相关状态
-const passwordStrength = ref('')
-const passwordStrengthPercent = ref(0)
-const passwordStrengthClass = ref('')
+const passwordStrength = ref('');
+const passwordStrengthPercent = ref(0);
+const passwordStrengthClass = ref('');
 
 // 计算密码强度文本
 const passwordStrengthText = computed(() => {
   switch (passwordStrength.value) {
-    case 'weak': return 'Weak password'
-    case 'medium': return 'Medium password'
-    case 'strong': return 'Strong password!'
-    default: return ''
+    case 'weak': return 'Weak password';
+    case 'medium': return 'Medium password';
+    case 'strong': return 'Strong password!';
+    default: return '';
   }
-})
+});
 
 // 监听密码变化，实时计算强度
 watch(() => form.value.password, (newVal) => {
-  calculatePasswordStrength(newVal)
-})
+  calculatePasswordStrength(newVal);
+});
 
 // 计算密码强度
 const calculatePasswordStrength = (password) => {
   if (!password) {
-    passwordStrength.value = ''
-    passwordStrengthPercent.value = 0
-    return
+    passwordStrength.value = '';
+    passwordStrengthPercent.value = 0;
+    return;
   }
   
-  let strength = 0
-  const hasLength = password.length >= 6
-  const hasUppercase = /[A-Z]/.test(password)
-  const hasLowercase = /[a-z]/.test(password)
-  const hasNumber = /[0-9]/.test(password)
-  const hasSpecialChar = /[^A-Za-z0-9]/.test(password)
+  let strength = 0;
+  const hasLength = password.length >= 6;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
   
   // 加分规则
-  if (hasLength) strength += 25
-  if (hasUppercase) strength += 25
-  if (hasLowercase) strength += 25
-  if (hasNumber) strength += 15
-  if (hasSpecialChar) strength += 10
+  if (hasLength) strength += 25;
+  if (hasUppercase) strength += 25;
+  if (hasLowercase) strength += 25;
+  if (hasNumber) strength += 15;
+  if (hasSpecialChar) strength += 10;
   
   // 确保不超过100%
-  strength = Math.min(strength, 100)
+  strength = Math.min(strength, 100);
   
   // 设置进度条百分比
-  passwordStrengthPercent.value = strength
+  passwordStrengthPercent.value = strength;
   
   // 设置强度级别和样式
   if (strength < 50) {
-    passwordStrength.value = 'weak'
-    passwordStrengthClass.value = 'bg-danger'
+    passwordStrength.value = 'weak';
+    passwordStrengthClass.value = 'bg-danger';
   } else if (strength < 80) {
-    passwordStrength.value = 'medium'
-    passwordStrengthClass.value = 'bg-warning'
+    passwordStrength.value = 'medium';
+    passwordStrengthClass.value = 'bg-warning';
   } else {
-    passwordStrength.value = 'strong'
-    passwordStrengthClass.value = 'bg-success'
+    passwordStrength.value = 'strong';
+    passwordStrengthClass.value = 'bg-success';
   }
-}
+};
 
 // 邮箱格式验证
 const isValidEmail = (email) => {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  return re.test(email)
-}
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
+};
 
 // 姓名验证函数
 const validateName = () => {
   if (!form.value.name.trim()) {
-    errors.value.name = 'Name is required'
+    errors.value.name = 'Name is required';
   } else {
-    errors.value.name = null
+    errors.value.name = null;
   }
-}
+};
 
 // 邮箱验证函数
 const validateEmail = () => {
   if (!form.value.email) {
-    errors.value.email = 'Email is required'
+    errors.value.email = 'Email is required';
   } else if (!isValidEmail(form.value.email)) {
-    errors.value.email = 'Email is invalid'
+    errors.value.email = 'Email is invalid';
   } else {
-    errors.value.email = null
+    errors.value.email = null;
   }
-}
+};
 
   // 角色验证函数（失去焦点时调用）
 const validateRole = () => {
   if (!form.value.role) { // 若角色未选择
-    errors.value.role = 'Please select your role' // 显示错误
+    errors.value.role = 'Please select your role'; // 显示错误
   } else {
-    errors.value.role = null // 清除错误
+    errors.value.role = null; // 清除错误
   }
-}
+};
 
 // 密码验证函数 - 增强版
 const validatePassword = () => {
-  const password = form.value.password
+  const password = form.value.password;
   
   if (!password) {
-    errors.value.password = 'Password is required'
-    return
+    errors.value.password = 'Password is required';
+    return;
   }
   
-  const minLength = 6
-  const hasUppercase = /[A-Z]/.test(password)
-  const hasLowercase = /[a-z]/.test(password)
+  const minLength = 6;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
   
-  const errorMessages = []
+  const errorMessages = [];
   
   if (password.length < minLength) {
-    errorMessages.push(`at least ${minLength} characters`)
+    errorMessages.push(`at least ${minLength} characters`);
   }
   
   if (!hasUppercase) {
-    errorMessages.push('one uppercase letter')
+    errorMessages.push('one uppercase letter');
   }
   
   if (!hasLowercase) {
-    errorMessages.push('one lowercase letter')
+    errorMessages.push('one lowercase letter');
   }
   
   if (errorMessages.length > 0) {
-    errors.value.password = `Password must contain: ${errorMessages.join(', ')}`
+    errors.value.password = `Password must contain: ${errorMessages.join(', ')}`;
   } else {
-    errors.value.password = null
+    errors.value.password = null;
   }
-}
+};
 
 // 确认密码验证函数
 const validateConfirmPassword = () => {
   if (!form.value.confirmPassword) {
-    errors.value.confirmPassword = 'Please confirm your password'
+    errors.value.confirmPassword = 'Please confirm your password';
   } else if (form.value.password !== form.value.confirmPassword) {
-    errors.value.confirmPassword = 'Passwords do not match'
+    errors.value.confirmPassword = 'Passwords do not match';
   } else {
-    errors.value.confirmPassword = null
+    errors.value.confirmPassword = null;
   }
-}
+};
 
 // 表单验证函数（提交时使用）
 const validateForm = () => {
-  validateName()
-  validateEmail()
-  validatePassword()
-  validateConfirmPassword()
-  validateRole()
+  validateName();
+  validateEmail();
+  validatePassword();
+  validateConfirmPassword();
+  validateRole();
   
   return !errors.value.name && 
          !errors.value.email && 
          !errors.value.password && 
          !errors.value.confirmPassword &&
-         !errors.value.role
-}
+         !errors.value.role;
+};
 
 // 提交表单
+const isSubmitting = ref(false);
+
 const submitForm = async () => {
+  if (isSubmitting.value) return;
+  
   if (validateForm()) {
+    isSubmitting.value = true;
     try {
-      const result = await authStore.register({
-        name: form.value.name,
-        email: form.value.email,
-        password: form.value.password,
-        role: form.value.role
-      })
-      
-      if (result.success) {
-        router.push('/')
-      } else {
-        registerError.value = result.message || 'Registration failed. Please try again.'
-      }
+      const result = await authStore.register(form.value);
+       if (result?.success) {
+         router.push('/');
+       } else {
+         registerError.value = result.message || 'Registration failed';
+       }
     } catch (error) {
-      registerError.value = 'An error occurred. Please try again later.'
+      registerError.value = error.message;
+    } finally {
+      isSubmitting.value = false;
     }
+  } else {
+    registerError.value = 'Please check and correct the errors in the form.';
   }
-}
+};
+
 </script>
 
 <style scoped>

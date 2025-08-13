@@ -44,52 +44,54 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/store'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/store';
 
-const router = useRouter()
-const authStore = useAuthStore()
+const router = useRouter();
+const authStore = useAuthStore();
 
 const form = ref({
   email: '',
   password: ''
-})
-const errors = ref({})
-const loginError = ref('')
+});
+const errors = ref({});
+const loginError = ref('');
 
 const validate = () => {
-  errors.value = {}
-  let isValid = true
+  errors.value = {};
+  let isValid = true;
   
   if (!form.value.email) {
-    errors.value.email = 'Email is required'
-    isValid = false
+    errors.value.email = '邮箱不能为空';
+    isValid = false;
   } else if (!isValidEmail(form.value.email)) {
-    errors.value.email = 'Email is invalid'
-    isValid = false
+    errors.value.email = '邮箱格式不正确';
+    isValid = false;
   }
   
   if (!form.value.password) {
-    errors.value.password = 'Password is required'
-    isValid = false
+    errors.value.password = '密码不能为空';
+    isValid = false;
   }
   
-  return isValid
-}
+  return isValid;
+};
 
 const isValidEmail = (email) => {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  return re.test(email)
-}
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
+};
 
-const submitForm = () => {
+const submitForm = async () => {
+  loginError.value = '';
   if (validate()) {
-    if (authStore.login(form.value.email, form.value.password)) {
-      router.push('/')
-    } else {
-      loginError.value = 'Invalid email or password'
+    try {
+      await authStore.login(form.value.email, form.value.password);
+      router.push('/');
+    } catch (error) {
+      loginError.value = error.message || '无效的邮箱或密码';
     }
   }
-}
+};
 </script>

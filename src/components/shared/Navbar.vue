@@ -23,14 +23,20 @@
                 <i class="fas fa-hand-holding-heart"></i> SUPPORT US
               </a>
               <ul class="dropdown-menu" aria-labelledby="supportUsDropdown">
-                <li><a class="dropdown-item" href="/donate"><i class="fas fa-donate"></i> Donate</a></li>
-                <li><a class="dropdown-item" href="/volunteering"><i class="fas fa-people-carry"></i> Volunteer</a></li>
+                <li><router-link class="dropdown-item" to="/donate"><i class="fas fa-donate"></i> Donate</router-link></li>
+                <li><router-link class="dropdown-item" to="/volunteering"><i class="fas fa-people-carry"></i> Volunteer</router-link></li>
                 <li><a class="dropdown-item" href="#"><i class="fas fa-bullhorn"></i> Advocate</a></li>
                 <li><a class="dropdown-item" href="#"><i class="fas fa-handshake"></i> Partner</a></li>
               </ul>
             </li>
             <li class="nav-item" v-if="isAuthenticated && user.role === 'beneficiary'">
               <router-link class="nav-link" to="/resources">RESOURCES</router-link>
+            </li>
+            <li class="nav-item" v-if="isAuthenticated">
+              <router-link class="nav-link" to="/map">MAP</router-link>
+            </li>
+            <li class="nav-item" v-if="isAuthenticated">
+              <router-link class="nav-link" to="/staff">STAFF</router-link>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="getHelpDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -57,12 +63,17 @@
             </li>
           </ul>
           <ul class="navbar-nav">
-            <template v-if="isAuthenticated">
+            <template v-if="isAuthenticated && user">
               <li class="nav-item">
-                <span class="nav-link">Welcome, {{ user.name }}</span>
+                <router-link to="/email" class="nav-link" title="Send Email">
+                  <i class="fas fa-envelope"></i>
+                </router-link>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#" @click="logout">Logout</a>
+                <span class="nav-link">Welcome, {{ user.name || user.email }}</span>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" @click.prevent="logout">Logout</a>
               </li>
             </template>
             <template v-else>
@@ -129,6 +140,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
 });
+
+console.log('Navbar isAuthenticated:', isAuthenticated.value, 'user:', user.value);
 </script>
 
 <style scoped>
