@@ -19,6 +19,16 @@
             Resources Verification
           </div>
         </li>
+        <li>
+          <div class="nav-item" @click="toggleExportMenu">
+            <span>Export Registrations</span>
+            <i :class="['arrow', { 'down': isExportMenuOpen }]"></i>
+          </div>
+          <ul v-if="isExportMenuOpen" class="sub-nav">
+            <li @click="exportToCSV">Export as CSV</li>
+            <li @click="exportToPDF">Export as PDF</li>
+          </ul>
+        </li>
       </ul>
     </div>
 
@@ -47,7 +57,33 @@
           <p class="location">📍 {{ activity.location }}</p>
           <p class="date">📅 {{ activity.date }}</p>
           <p class="description">{{ activity.description }}</p>
-          <button class="btn btn-primary">Join Activity</button>
+          <button @click="openRegistrationModal(activity)" class="btn btn-primary">Join Activity</button>
+        </div>
+      </div>
+
+      <!-- Registration Modal -->
+      <div v-if="isModalOpen" class="modal-overlay" @click.self="closeRegistrationModal">
+        <div class="modal-content">
+          <h2>Register for {{ selectedActivity.title }}</h2>
+          <div class="activity-details">
+            <p><strong>Location:</strong> {{ selectedActivity.location }}</p>
+            <p><strong>Date:</strong> {{ selectedActivity.date }}</p>
+            <p><strong>Contact Person:</strong> {{ selectedActivity.contactPerson }}</p>
+          </div>
+          <form @submit.prevent="submitRegistration">
+            <div class="form-group">
+              <label for="name">Full Name:</label>
+              <input type="text" id="name" v-model="registrationForm.name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" id="email" v-model="registrationForm.email" required>
+            </div>
+            <div class="modal-actions">
+              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="button" @click="closeRegistrationModal" class="btn btn-secondary">Cancel</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -56,38 +92,130 @@
 
 <script>
 import activityData from '@/assets/volunteer-activities.json';
+import Papa from 'papaparse';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import existingRegistrations from '@/assets/registrations.json';
 
 export default {
   name: 'VolunteerHub',
   data() {
     return {
       isTaskCenterOpen: false,
+      isExportMenuOpen: false,
       selectedLocation: '',
       selectedDate: '',
       locations: activityData.locations,
-      activities: activityData.activities
+      activities: activityData.activities,
+      isModalOpen: false,
+      selectedActivity: null,
+      registrationForm: {
+        name: '',
+        email: ''
+      },
+      newRegistrations: []
     }
   },
   computed: {
     filteredActivities() {
       return this.activities.filter(activity => {
-        const locationMatch = !this.selectedLocation || activity.location === this.selectedLocation
-        const dateMatch = !this.selectedDate || activity.date === this.selectedDate
-        return locationMatch && dateMatch
-      })
+        const locationMatch = !this.selectedLocation || activity.location === this.selectedLocation;
+        const dateMatch = !this.selectedDate || activity.date === this.selectedDate;
+        return locationMatch && dateMatch;
+      });
     }
   },
   methods: {
     toggleTaskCenter() {
-      this.isTaskCenterOpen = !this.isTaskCenterOpen
+      this.isTaskCenterOpen = !this.isTaskCenterOpen;
+    },
+    toggleExportMenu() {
+      this.isExportMenuOpen = !this.isExportMenuOpen;
     },
     selectSubTask(type) {
-      console.log('Selected task type:', type)
-      // Load data based on the selected task type
+      console.log('Selected task type:', type);
     },
     selectSection(section) {
-      console.log('Selected section:', section)
-      // Handle logic for the resource validation section
+      console.log('Selected section:', section);
+    },
+    openRegistrationModal(activity) {
+      this.selectedActivity = activity;
+      this.isModalOpen = true;
+    },
+    closeRegistrationModal() {
+      this.isModalOpen = false;
+      this.selectedActivity = null;
+      this.registrationForm.name = '';
+      this.registrationForm.email = '';
+    },
+    submitRegistration() {
+      const registration = {
+        activityId: this.selectedActivity.id,
+        activityTitle: this.selectedActivity.title,
+        userName: this.registrationForm.name,
+        userEmail: this.registrationForm.email,
+        registrationDate: new Date().toISOString(),
+        location: this.selectedActivity.location,
+        date: this.selectedActivity.date,
+        contactPerson: this.selectedActivity.contactPerson
+      };
+      this.newRegistrations.push(registration);
+      alert(`Successfully registered for ${this.selectedActivity.title}!`);
+      this.closeRegistrationModal();
+    },
+    exportToCSV() {
+      const allRegistrations = [...existingRegistrations, ...this.newRegistrations];
+      if (allRegistrations.length === 0) {
+        alert('No registrations to export.');
+        return;
+      }
+      const csv = Papa.unparse(allRegistrations);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'registrations.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
+    exportToPDF() {
+      const allRegistrations = [...existingRegistrations, ...this.newRegistrations];
+      if (allRegistrations.length === 0) {
+        alert('No registrations to export.');
+        return;
+      }
+
+      const doc = new jsPDF();
+      doc.text('Volunteer Registrations', 14, 16);
+
+      const tableColumn = [
+        'Activity Title', 'User Name', 'User Email', 'Registration Date',
+        'Location', 'Date', 'Contact Person'
+      ];
+      const tableRows = [];
+
+      allRegistrations.forEach(reg => {
+        const registrationData = [
+          reg.activityTitle || '',
+          reg.userName || '',
+          reg.userEmail || '',
+          reg.registrationDate ? new Date(reg.registrationDate).toLocaleDateString() : '',
+          reg.location || '',
+          reg.date || '',
+          reg.contactPerson || ''
+        ];
+        tableRows.push(registrationData);
+      });
+
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 20
+      });
+
+      doc.save('registrations.pdf');
     }
   }
 }
@@ -225,6 +353,64 @@ export default {
 
 .btn-primary:hover {
   background-color: #0056b3;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
 }
 </style>
 

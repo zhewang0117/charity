@@ -17,6 +17,41 @@
       "id": 3,
       "name": "David Johnson",
       "role": "Cleaner"
+    },
+    {
+      "id": 4,
+      "name": "Emily Davis",
+      "role": "Coordinator"
+    },
+    {
+      "id": 5,
+      "name": "Michael Brown",
+      "role": "Developer"
+    },
+    {
+      "id": 6,
+      "name": "Sarah Wilson",
+      "role": "Designer"
+    },
+    {
+      "id": 7,
+      "name": "Chris Lee",
+      "role": "Manager"
+    },
+    {
+      "id": 8,
+      "name": "Jessica Garcia",
+      "role": "Accountant"
+    },
+    {
+      "id": 9,
+      "name": "Daniel Martinez",
+      "role": "HR Specialist"
+    },
+    {
+      "id": 10,
+      "name": "Laura Rodriguez",
+      "role": "Marketing Head"
     }
   ]
 }

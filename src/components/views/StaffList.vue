@@ -36,23 +36,13 @@ const columns = ref([
     filterOptions: { enabled: true, placeholder: 'Filter by Name' },
   },
   {
-    label: 'Position',
-    field: 'position',
-    filterOptions: { enabled: true, placeholder: 'Filter by Position' },
-  },
-  {
-    label: 'Email',
-    field: 'email',
-    sortable: false,
-  },
-  {
-    label: 'Phone',
-    field: 'phone',
-    sortable: false,
+    label: 'Role',
+    field: 'role',
+    filterOptions: { enabled: true, placeholder: 'Filter by Role' },
   },
 ]);
 
-const rows = ref(staffData.staff);
+const rows = ref(staffData.volunteers);
 
 </script>
 

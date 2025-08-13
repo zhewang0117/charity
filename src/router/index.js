@@ -129,6 +129,7 @@ const routes = [
     name: 'email',
     component: () => import('@/components/email/EmailSender.vue'),
     meta: { requiresAuth: true }
+  },
   {
       path: '/map',
       name: 'map',
@@ -141,6 +142,12 @@ const routes = [
       component: () => import('../components/views/StaffList.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/activities',
+      name: 'Activities',
+      component: () => import('../components/views/ActivitiesList.vue'),
+      meta: { requiresAuth: true },
+    }
 ]
 
 const router = createRouter({
