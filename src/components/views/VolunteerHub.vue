@@ -96,6 +96,8 @@ import Papa from 'papaparse';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import existingRegistrations from '@/assets/registrations.json';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { getApp } from 'firebase/app';
 
 export default {
   name: 'VolunteerHub',
@@ -159,9 +161,39 @@ export default {
         date: this.selectedActivity.date,
         contactPerson: this.selectedActivity.contactPerson
       };
-      this.newRegistrations.push(registration);
-      alert(`Successfully registered for ${this.selectedActivity.title}!`);
-      this.closeRegistrationModal();
+      // Try to call Cloud Function if available
+      try {
+        const app = getApp();
+        const functions = getFunctions(app);
+        const submitSignup = httpsCallable(functions, 'submitVolunteerSignup');
+        submitSignup({
+          name: this.registrationForm.name,
+          email: this.registrationForm.email,
+          activityId: this.selectedActivity.id,
+          message: ''
+        }).then((result) => {
+          const data = result.data;
+          if (data && data.success) {
+            alert(`Successfully registered for ${this.selectedActivity.title}! (Server id: ${data.id})`);
+          } else {
+            // fallback local push
+            this.newRegistrations.push(registration);
+            alert(`Registered locally for ${this.selectedActivity.title} (offline fallback).`);
+          }
+          this.closeRegistrationModal();
+        }).catch((err) => {
+          console.error('Callable error', err);
+          this.newRegistrations.push(registration);
+          alert(`Registered locally for ${this.selectedActivity.title} (fallback).`);
+          this.closeRegistrationModal();
+        });
+      } catch (err) {
+        // If firebase not initialized or functions not available, fallback
+        console.warn('Firebase functions not available, falling back to local registrations', err);
+        this.newRegistrations.push(registration);
+        alert(`Successfully registered for ${this.selectedActivity.title}!`);
+        this.closeRegistrationModal();
+      }
     },
     exportToCSV() {
       const allRegistrations = [...existingRegistrations, ...this.newRegistrations];

@@ -86,12 +86,13 @@ const isValidEmail = (email) => {
 const submitForm = async () => {
   loginError.value = '';
   if (validate()) {
-    try {
-      await authStore.login(form.value.email, form.value.password);
-      router.push('/');
-    } catch (error) {
-      loginError.value = error.message || '无效的邮箱或密码';
-    }
+      const result = await authStore.login(form.value.email, form.value.password);
+        if (result && result.success) {
+        router.push('/');
+      } else {
+          const code = result?.code ? `(${result.code}) ` : '';
+          loginError.value = code + (result?.message || '无效的邮箱或密码');
+      }
   }
 };
 </script>

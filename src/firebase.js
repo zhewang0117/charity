@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app"; 
 import { getAuth } from "firebase/auth"; 
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 
 const firebaseConfig = { 
   apiKey: "AIzaSyCFuW9Rp8PHx2Kv2qqeiUghCRCErt6Q5Ps", 
@@ -14,5 +15,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig); 
 const auth = getAuth(app);
 const db = getFirestore(app);
+const functions = getFunctions(app);
 
-export { auth, db };
+// Auto-connect to emulators when running on localhost (development)
+try {
+  if (typeof window !== 'undefined' && window.location && window.location.hostname === 'localhost') {
+    // Functions emulator default port 5001, Firestore emulator default port 8080
+    connectFunctionsEmulator(functions, 'localhost', 5001);
+    connectFirestoreEmulator(db, 'localhost', 8080);
+    console.info('Connected to Firebase emulators: functions@5001 firestore@8080');
+  }
+} catch (e) {
+  // ignore in non-browser environments
+}
+
+export { auth, db, functions, app };

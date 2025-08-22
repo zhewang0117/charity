@@ -1,7 +1,7 @@
 <template>
   <div id="app-container">
     <Navbar />
-    <main class="main-content">
+    <main id="main" class="main-content" tabindex="-1" aria-label="Main content">
       <router-view />
     </main>
     <Footer />

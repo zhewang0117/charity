@@ -12,6 +12,10 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 
 ## Project Setup
 
+## Serverless functions
+
+This project includes a `functions/` folder with example Firebase Cloud Functions (callable, HTTP endpoint, auth trigger, scheduled job). See `functions/README.md` for setup and deployment instructions.
+
 ```sh
 npm install
 ```

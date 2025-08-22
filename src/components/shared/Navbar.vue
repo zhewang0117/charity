@@ -19,14 +19,16 @@
         <div :class="['collapse', 'navbar-collapse', { 'show': !isNavbarCollapsed }]" id="navbarNav">
           <ul class="navbar-nav me-auto">
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="supportUsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-hand-holding-heart"></i> SUPPORT US
-              </a>
+              <button class="nav-link dropdown-toggle btn-link" id="supportUsDropdown" aria-haspopup="true" :aria-expanded="false" @click="toggleDropdown('supportUsDropdown')" @keydown.enter.prevent="toggleDropdown('supportUsDropdown')">
+                <i class="fas fa-hand-holding-heart" aria-hidden="true"></i>
+                <span class="visually-hidden">Support Us</span>
+                <span aria-hidden="true"> SUPPORT US</span>
+              </button>
               <ul class="dropdown-menu" aria-labelledby="supportUsDropdown">
-                <li><router-link class="dropdown-item" to="/donate"><i class="fas fa-donate"></i> Donate</router-link></li>
-                <li><router-link class="dropdown-item" to="/volunteering"><i class="fas fa-people-carry"></i> Volunteer</router-link></li>
-                <li><a class="dropdown-item" href="#"><i class="fas fa-bullhorn"></i> Advocate</a></li>
-                <li><a class="dropdown-item" href="#"><i class="fas fa-handshake"></i> Partner</a></li>
+                <li><router-link class="dropdown-item" to="/donate"><i class="fas fa-donate" aria-hidden="true"></i> <span>Donate</span></router-link></li>
+                <li><router-link class="dropdown-item" to="/volunteering"><i class="fas fa-people-carry" aria-hidden="true"></i> <span>Volunteer</span></router-link></li>
+                <li><button class="dropdown-item btn-link" @click.prevent> <i class="fas fa-bullhorn" aria-hidden="true"></i> <span>Advocate</span></button></li>
+                <li><button class="dropdown-item btn-link" @click.prevent> <i class="fas fa-handshake" aria-hidden="true"></i> <span>Partner</span></button></li>
               </ul>
             </li>
             <li class="nav-item" v-if="isAuthenticated && user.role === 'beneficiary'">
@@ -39,9 +41,9 @@
               <router-link class="nav-link" to="/staff">STAFF</router-link>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="getHelpDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                GET HELP
-              </a>
+              <button class="nav-link dropdown-toggle btn-link" id="getHelpDropdown" aria-haspopup="true" :aria-expanded="false" @click="toggleDropdown('getHelpDropdown')" @keydown.enter.prevent="toggleDropdown('getHelpDropdown')">
+                <span>GET HELP</span>
+              </button>
               <ul class="dropdown-menu" aria-labelledby="getHelpDropdown">
                 <li><router-link class="dropdown-item" to="/emergency-help">Emergency Help</router-link></li>
                 <li><router-link class="dropdown-item" to="/career-assistance">Career Assistance</router-link></li>
@@ -54,9 +56,9 @@
               <router-link class="nav-link" to="/admin/activities">Manage Activities</router-link>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="aboutUsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                ABOUT US
-              </a>
+              <button class="nav-link dropdown-toggle btn-link" id="aboutUsDropdown" aria-haspopup="true" :aria-expanded="false" @click="toggleDropdown('aboutUsDropdown')" @keydown.enter.prevent="toggleDropdown('aboutUsDropdown')">
+                <span>ABOUT US</span>
+              </button>
               <ul class="dropdown-menu" aria-labelledby="aboutUsDropdown">
                 <li><router-link class="dropdown-item" to="/staff">Staff</router-link></li>
               </ul>
@@ -72,8 +74,8 @@
               <li class="nav-item">
                 <span class="nav-link">Welcome, {{ user.name || user.email }}</span>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#" @click.prevent="logout">Logout</a>
+                <li class="nav-item">
+                <button class="nav-link btn-link" @click.prevent="logout">Logout</button>
               </li>
             </template>
             <template v-else>
@@ -125,6 +127,15 @@ const isNavbarCollapsed = ref(true);
 
 const toggleNavbar = () => {
   isNavbarCollapsed.value = !isNavbarCollapsed.value;
+};
+
+// simple dropdown toggle helper for keyboard accessibility (non-Bootstrap fallback)
+const openDropdowns = ref({});
+const toggleDropdown = (id) => {
+  openDropdowns.value[id] = !openDropdowns.value[id];
+  // update aria-expanded attribute on the toggle button
+  const btn = document.getElementById(id);
+  if (btn) btn.setAttribute('aria-expanded', openDropdowns.value[id] ? 'true' : 'false');
 };
 
 const handleResize = () => {
@@ -184,6 +195,24 @@ console.log('Navbar isAuthenticated:', isAuthenticated.value, 'user:', user.valu
 .logo-text {
   display: flex;
   flex-direction: column;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 
 .logo-main {

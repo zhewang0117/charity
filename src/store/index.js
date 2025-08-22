@@ -51,7 +51,7 @@ await setDoc(doc(db, 'users', user.uid), sanitizedProfile);
         return { success: true, user: this.user };
       } catch (error) {
         console.error('Registration Error:', error);
-        return { success: false, message: error.message };
+    return { success: false, message: error.message, code: error.code };
       }
     },
 
@@ -59,32 +59,58 @@ await setDoc(doc(db, 'users', user.uid), sanitizedProfile);
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-          this.user = { 
-  uid: user.uid,
-  email: user.email,
-  name: userDoc.data().name || 'New User',
-  role: userDoc.data().role || 'immigrant',
-  languagePreference: userDoc.data().languagePreference || 'en'
-};
-          localStorage.setItem('user', JSON.stringify(this.user));
-        } else {
-          this.user = { 
-  uid: user.uid, 
-  email: user.email,
-  name: 'New User',
-  role: 'immigrant',
-  languagePreference: 'en'
-}; // Fallback
-          this.isAuthResolved = true;
-          localStorage.setItem('user', JSON.stringify(this.user));
+
+        let userDoc;
+        try {
+          userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            this.user = {
+              uid: user.uid,
+              email: user.email,
+              name: userDoc.data().name || 'New User',
+              role: userDoc.data().role || 'immigrant',
+              languagePreference: userDoc.data().languagePreference || 'en'
+            };
+          } else {
+            // Firestore doc missing, fallback to minimal auth-derived profile
+            this.user = {
+              uid: user.uid,
+              email: user.email,
+              name: 'New User',
+              role: 'immigrant',
+              languagePreference: 'en'
+            };
+          }
+        } catch (err) {
+          // If Firestore is unreachable (emulator not running or offline),
+          // try to preserve any previously stored role in localStorage so a
+          // user who registered as 'volunteer' doesn't get shown as 'immigrant'.
+          console.warn('getDoc failed during login, falling back to auth user:', err);
+          let fallbackRole = 'immigrant';
+          try {
+            const stored = localStorage.getItem('user');
+            if (stored) {
+              const parsed = JSON.parse(stored);
+              if (parsed && parsed.role) fallbackRole = parsed.role;
+            }
+          } catch (e) {
+            // ignore parse errors and keep default
+          }
+          this.user = {
+            uid: user.uid,
+            email: user.email,
+            name: 'New User',
+            role: fallbackRole,
+            languagePreference: 'en'
+          };
         }
-        return true;
+
+        this.isAuthResolved = true;
+        localStorage.setItem('user', JSON.stringify(this.user));
+        return { success: true, user: this.user };
       } catch (error) {
         console.error('Login Error:', error);
-        return false;
+        return { success: false, message: error.message };
       }
     },
 
