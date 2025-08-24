@@ -12,7 +12,7 @@ import activities from '@/assets/volunteer-activities.json';
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
-    isAuthResolved: false, // 新增状态，用于跟踪认证是否完成
+    isAuthResolved: false, 
     volunteers: JSON.parse(localStorage.getItem('volunteers')) || [
       { id: 'v1', name: 'John Doe', ratings: [] },
       { id: 'v2', name: 'Jane Smith', ratings: [] }
@@ -26,9 +26,14 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async register(userData) {
+      console.log('=== AuthStore register started ===');
+      console.log('Registration data:', userData);
+      
       try {
+        console.log('Creating user account...');
         const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
         const user = userCredential.user;
+        console.log('Firebase user created successfully:', user.uid);
         
         const userProfile = {
           name: userData.name,
@@ -37,21 +42,37 @@ export const useAuthStore = defineStore('auth', {
           languagePreference: userData.languagePreference || 'en',
           createdAt: new Date().toISOString()
         };
-
-        // 增加空值校验
-const sanitizedProfile = Object.fromEntries(
-  Object.entries(userProfile).map(([key, val]) => [key, val || 'N/A'])
-);
-await setDoc(doc(db, 'users', user.uid), sanitizedProfile);
+        console.log('User profile:', userProfile);
 
         this.user = { uid: user.uid, ...userProfile };
-        this.isAuthResolved = true; // 设置认证完成标志
+        this.isAuthResolved = true;
         localStorage.setItem('user', JSON.stringify(this.user));
         
+        console.log('User state set successfully, returning success');
+        console.log('Current user state:', this.user);
+
+        this.saveUserToFirestore(user.uid, userProfile);
+        
         return { success: true, user: this.user };
+        
       } catch (error) {
-        console.error('Registration Error:', error);
-    return { success: false, message: error.message, code: error.code };
+        console.error('Error during registration:', error);
+        console.error('Error details:', { message: error.message, code: error.code });
+        return { success: false, message: error.message, code: error.code };
+      }
+    },
+
+    async saveUserToFirestore(uid, userProfile) {
+      try {
+        const sanitizedProfile = Object.fromEntries(
+          Object.entries(userProfile).map(([key, val]) => [key, val || 'N/A'])
+        );
+        
+        console.log('Saving user profile to Firestore asynchronously...');
+        await setDoc(doc(db, 'users', uid), sanitizedProfile);
+        console.log('Firestore save successful');
+      } catch (firestoreError) {
+        console.warn('Firestore async save failed:', firestoreError);
       }
     },
 

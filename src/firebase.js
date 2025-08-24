@@ -18,15 +18,14 @@ const db = getFirestore(app);
 const functions = getFunctions(app);
 
 // Auto-connect to emulators when running on localhost (development)
+// 临时禁用模拟器连接以避免超时问题
 try {
-  if (typeof window !== 'undefined' && window.location && window.location.hostname === 'localhost') {
-    // Functions emulator default port 5001, Firestore emulator default port 8080
-    connectFunctionsEmulator(functions, 'localhost', 5001);
-    connectFirestoreEmulator(db, 'localhost', 8080);
-    console.info('Connected to Firebase emulators: functions@5001 firestore@8080');
+  if (false && typeof window !== 'undefined' && window.location && window.location.hostname === 'localhost') {
+  } else {
+    console.info('Using Firebase production services');
   }
 } catch (e) {
-  // ignore in non-browser environments
+  console.warn('Firebase emulator connection failed:', e);
 }
 
 export { auth, db, functions, app };

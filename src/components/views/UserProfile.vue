@@ -54,13 +54,61 @@
     </div>
     
     <!-- 待评价服务区域 -->
-    <div class="ratings-section">
-      <h2 class="section-title">
-        <i class="fas fa-star-half-alt"></i>
-        Pending Service Ratings
+    </div>
+    
+    <!-- 快速功能访问面板 -->
+    <div class="quick-access-panel">
+      <h2 class="panel-title">
+        <i class="fas fa-bolt"></i>
+        Quick Actions
       </h2>
-      
-      <!-- 加载状态 -->
+      <div class="quick-actions-grid">
+        <router-link to="/appointment-booking" class="quick-action-card">
+          <div class="action-icon appointment">
+            <i class="fas fa-calendar-plus"></i>
+          </div>
+          <div class="action-content">
+            <h4>Book Appointment</h4>
+            <p>Schedule your next service</p>
+          </div>
+        </router-link>
+        
+        <router-link to="/dashboard" class="quick-action-card">
+          <div class="action-icon analytics">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="action-content">
+            <h4>View Analytics</h4>
+            <p>Check your activity dashboard</p>
+          </div>
+        </router-link>
+        
+        <router-link v-if="user && (user.role === 'admin' || user.role === 'staff')" to="/bulk-email" class="quick-action-card">
+          <div class="action-icon email">
+            <i class="fas fa-envelope-open-text"></i>
+          </div>
+          <div class="action-content">
+            <h4>Email Campaigns</h4>
+            <p>Manage bulk communications</p>
+          </div>
+        </router-link>
+        
+        <router-link v-if="user && user.role === 'admin'" to="/admin-dashboard" class="quick-action-card">
+          <div class="action-icon admin">
+            <i class="fas fa-tachometer-alt"></i>
+          </div>
+          <div class="action-content">
+            <h4>Admin Panel</h4>
+            <p>Platform management</p>
+          </div>
+        </router-link>
+      </div>
+    </div>
+    
+    <!-- 评分和反馈部分 -->
+    <div class="rating-section">
+      <h2 class="section-title">
+        <i class="fas fa-star"></i>      <!-- 加载状态 -->
       <div v-if="loading" class="loading-container">
         <div class="loading-spinner"></div>
         <p>Loading your pending ratings...</p>
@@ -198,6 +246,112 @@ export default {
       max-width: 1000px;
       margin: 0 auto;
       padding: 20px;
+    }
+    
+    /* 快速访问面板样式 */
+    .quick-access-panel {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      color: white;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .panel-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .panel-title i {
+      color: #ffd700;
+    }
+    
+    .quick-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    
+    .quick-action-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .quick-action-card:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      color: white;
+      text-decoration: none;
+    }
+    
+    .action-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    
+    .action-icon.appointment {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    }
+    
+    .action-icon.analytics {
+      background: linear-gradient(135deg, #4ecdc4, #00d2d3);
+    }
+    
+    .action-icon.email {
+      background: linear-gradient(135deg, #45b7d1, #96c93d);
+    }
+    
+    .action-icon.admin {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+    }
+    
+    .action-content h4 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    
+    .action-content p {
+      margin: 0;
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+    
+    @media (max-width: 768px) {
+      .quick-actions-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .quick-action-card {
+        padding: 1rem;
+      }
+      
+      .action-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
     }
     
     .header-container {

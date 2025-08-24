@@ -63,15 +63,15 @@ const validate = () => {
   let isValid = true;
   
   if (!form.value.email) {
-    errors.value.email = '邮箱不能为空';
+    errors.value.email = 'Email is required';
     isValid = false;
   } else if (!isValidEmail(form.value.email)) {
-    errors.value.email = '邮箱格式不正确';
+    errors.value.email = 'Invalid email format';
     isValid = false;
   }
   
   if (!form.value.password) {
-    errors.value.password = '密码不能为空';
+    errors.value.password = 'Password is required';
     isValid = false;
   }
   
@@ -91,7 +91,7 @@ const submitForm = async () => {
         router.push('/');
       } else {
           const code = result?.code ? `(${result.code}) ` : '';
-          loginError.value = code + (result?.message || '无效的邮箱或密码');
+          loginError.value = code + (result?.message || 'Invalid email or password');
       }
   }
 };

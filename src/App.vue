@@ -5,17 +5,20 @@
       <router-view />
     </main>
     <Footer />
+    <ChatbotWidget />
   </div>
 </template>
 
 <script>
 import Navbar from '@/components/shared/Navbar.vue';
 import Footer from '@/components/shared/Footer.vue';
+import ChatbotWidget from '@/components/shared/chatbot.vue';
 
 export default {
   components: {
     Navbar,
     Footer,
+    ChatbotWidget,
   },
 };
 </script>

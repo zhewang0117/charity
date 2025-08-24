@@ -1,18 +1,21 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-require('dotenv').config({ path: 'C:/Users/27597/Desktop/fit5032/CareNexus/.env' });
+require('dotenv').config();
 
 const app = express();
 const PORT = 3001;
 
+// 中间件
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '10mb' })); // 支持较大的附件
 
+// SendGrid邮件发送端点
 app.post('/send-email', async (req, res) => {
   try {
     const { to, subject, text, attachments } = req.body;
     
+    // 验证必需字段
     if (!to || !subject || !text) {
       return res.status(400).json({
         success: false,
@@ -20,6 +23,7 @@ app.post('/send-email', async (req, res) => {
       });
     }
 
+    // 验证SendGrid API密钥
     if (!process.env.SENDGRID_API_KEY) {
       return res.status(500).json({
         success: false,
@@ -27,6 +31,7 @@ app.post('/send-email', async (req, res) => {
       });
     }
 
+    // 准备SendGrid邮件数据
     const emailData = {
       personalizations: [
         {
@@ -35,7 +40,7 @@ app.post('/send-email', async (req, res) => {
         }
       ],
       from: {
-        email: 'zwan0602@student.monash.edu',
+        email: 'noreply@carenexus.com', // 替换为你验证的邮箱
         name: 'CareNexus'
       },
       content: [
@@ -46,18 +51,12 @@ app.post('/send-email', async (req, res) => {
       ]
     };
 
+    // 添加附件（如果有）
     if (attachments && attachments.length > 0) {
       emailData.attachments = attachments;
     }
 
-    console.log('Sending email to SendGrid:', { 
-      to, 
-      subject,
-      from: 'zwan0602@student.monash.edu',
-      apiKeyPrefix: process.env.SENDGRID_API_KEY ? process.env.SENDGRID_API_KEY.substring(0, 10) + '...' : 'NOT_SET'
-    });
-    console.log('Full email data:', JSON.stringify(emailData, null, 2));
-
+    // 调用SendGrid API
     const response = await axios.post(
       'https://api.sendgrid.com/v3/mail/send',
       emailData,
@@ -68,10 +67,6 @@ app.post('/send-email', async (req, res) => {
         }
       }
     );
-
-    console.log('SendGrid response status:', response.status);
-    console.log('SendGrid response headers:', response.headers);
-    console.log('SendGrid response data:', response.data);
 
     if (response.status === 202) {
       res.json({
@@ -86,35 +81,31 @@ app.post('/send-email', async (req, res) => {
     }
 
   } catch (error) {
-    console.error('Email sending error:', error.message);
+    console.error('Email sending error:', error);
     
     if (error.response) {
-      console.error('SendGrid error details:', error.response.data);
+      // SendGrid API错误
       const errorMsg = error.response.data?.errors?.[0]?.message || 'Unknown SendGrid error';
       res.status(error.response.status).json({
         success: false,
         message: `SendGrid API Error: ${errorMsg}`
       });
     } else {
+      // 其他错误
       res.status(500).json({
         success: false,
-        message: 'Internal server error: ' + error.message
+        message: 'Internal server error'
       });
     }
   }
 });
 
+// 健康检查端点
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'Email server is running',
-    sendgridConfigured: !!process.env.SENDGRID_API_KEY,
-    fromEmail: 'zwan0602@student.monash.edu'
-  });
+  res.json({ status: 'OK', message: 'Email server is running' });
 });
 
 app.listen(PORT, () => {
   console.log(`Email server running on http://localhost:${PORT}`);
   console.log(`SendGrid API key configured: ${process.env.SENDGRID_API_KEY ? 'Yes' : 'No'}`);
-  console.log(`From email: zwan0602@student.monash.edu`);
 });

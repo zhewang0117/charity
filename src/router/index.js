@@ -8,6 +8,41 @@ const routes = [
     component: () => import('@/components/views/HomePage.vue')
   },
   {
+    path: '/about',
+    name: 'about',
+    component: () => import('@/components/views/AboutUs.vue')
+  },
+  {
+    path: '/appointment-booking',
+    name: 'appointment-booking',
+    component: () => import('@/components/views/AppointmentBooking.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/bulk-email',
+    name: 'bulk-email',
+    component: () => import('@/components/views/BulkEmailSystem.vue'),
+    meta: { requiresAuth: true, requiredRole: 'admin' }
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: () => import('@/components/views/InteractiveDashboard.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+        path: '/admin-dashboard',
+        name: 'AdminDashboard',
+        component: () => import('@/components/views/AdminDashboard.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/admin-test',
+        name: 'AdminTestPage',
+        component: () => import('@/components/views/AdminTestPage.vue'),
+        meta: { requiresAuth: true }
+      },
+  {
     path: '/resources',
     name: 'resources',
     component: () => import('@/components/views/ResourcesPage.vue'),
@@ -31,12 +66,6 @@ const routes = [
     component: () => import('@/components/views/MedicalService.vue'),
     meta: { requiresAuth: true }
   },
-  // {
-  //   path: '/community',
-  //   name: 'community',
-  //   component: () => import('@/components/views/CommunityPage.vue'),
-  //   meta: { requiresAuth: true }
-  // },
   // {
   //   path: '/admin',
   //   name: 'admin',
@@ -62,7 +91,7 @@ const routes = [
     path: '/staff',
     name: 'staff',
     component: () => import('@/components/views/Staff.vue'),
-    meta: { requiresAuth: true } // 根据需要添加
+    meta: { requiresAuth: true }
   },
   {
     path: '/donate',
@@ -139,7 +168,7 @@ const routes = [
     {
       path: '/staff',
       name: 'staff',
-      component: () => import('../components/views/StaffList.vue'),
+      component: () => import('../components/views/Staff.vue'),
       meta: { requiresAuth: true },
     },
     {

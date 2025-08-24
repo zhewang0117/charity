@@ -421,7 +421,7 @@ export default {
 }
 
 .feature-link.profile {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
 .feature-link.activities {
@@ -499,7 +499,7 @@ export default {
 
 .direct-link {
   padding: 1rem;
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   text-decoration: none;
   border-radius: 10px;

@@ -1,7 +1,7 @@
 <template>
   <div class="appointment-booking">
     <div class="container">
-      <!-- 页面标题 -->
+
       <div class="page-header">
         <h1 class="page-title">
           <i class="fas fa-calendar-check"></i>
@@ -10,7 +10,7 @@
         <p class="page-subtitle">Schedule your healthcare or support services</p>
       </div>
 
-      <!-- 服务选择 -->
+
       <div class="service-selection">
         <h3>Select Service</h3>
         <div class="service-grid">
@@ -29,13 +29,11 @@
         </div>
       </div>
 
-      <!-- 预约表单 -->
       <div v-if="selectedService" class="booking-form">
         <div class="form-container">
           <div class="calendar-section">
             <h3>Select Date & Time</h3>
-            
-            <!-- 日历组件 -->
+   
             <div class="calendar-container">
               <div class="calendar-header">
                 <button @click="previousMonth" class="nav-btn">
@@ -411,14 +409,13 @@ export default {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      // 不能预约过去的日期
+
       if (date.date < today) return false;
       
-      // 检查是否是工作日
+   
       const dayOfWeek = date.date.getDay();
       if (workingHours.unavailableDays.includes(dayOfWeek)) return false;
-      
-      // 检查是否是节假日
+     
       const dateStr = date.date.toISOString().split('T')[0];
       if (workingHours.holidays.includes(dateStr)) return false;
       
@@ -428,7 +425,7 @@ export default {
     const selectDate = (date) => {
       if (isDateAvailable(date)) {
         selectedDate.value = date.date;
-        selectedTime.value = null; // 重置时间选择
+        selectedTime.value = null; 
       }
     };
 
@@ -437,8 +434,7 @@ export default {
     };
 
     const isTimeAvailable = () => {
-      // 这里可以添加更复杂的逻辑来检查特定时间是否已被预订
-      // 目前简单返回true，实际应用中需要查询数据库
+      
       return true;
     };
 
@@ -462,7 +458,7 @@ export default {
       isSubmitting.value = true;
       
       try {
-        // 准备预约数据
+    
         const appointmentData = {
           serviceId: selectedService.value.id,
           serviceName: selectedService.value.name,
@@ -480,12 +476,11 @@ export default {
           createdAt: new Date().toISOString()
         };
 
-        // 调用云函数保存预约
         const bookAppointment = httpsCallable(functions, 'bookAppointment');
         const result = await bookAppointment(appointmentData);
 
         if (result.data.success) {
-          // 保存预约信息用于显示
+
           bookedAppointment.value = {
             service: selectedService.value.name,
             date: formatSelectedDate(),
@@ -525,7 +520,7 @@ export default {
     };
 
     return {
-      // 响应式数据
+     
       selectedService,
       selectedDate,
       selectedTime,
@@ -536,14 +531,13 @@ export default {
       appointmentForm,
       services,
       
-      // 计算属性
+      
       weekdays,
       currentMonthYear,
       calendarDates,
       availableTimes,
       canSubmit,
       
-      // 方法
       selectService,
       previousMonth,
       nextMonth,
@@ -564,7 +558,7 @@ export default {
 
 <style scoped>
 .appointment-booking {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   padding: 2rem 0;
 }
@@ -589,7 +583,7 @@ export default {
 
 .page-title i {
   margin-right: 1rem;
-  color: hsla(160, 100%, 37%, 1);
+  color: #ffd700;
 }
 
 .page-subtitle {
@@ -630,27 +624,27 @@ export default {
 }
 
 .service-card:hover {
-  border-color: #007bff;
+  border-color: #667eea;
   transform: translateY(-5px);
-  box-shadow: 0 5px 20px rgba(0, 123, 255, 0.2);
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
 }
 
 .service-card.active {
-  border-color: #007bff;
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  border-color: #667eea;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
 }
 
 .service-card i {
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: #007bff;
+  color: #667eea;
 }
 
 .service-card.active i {
-  color: hsla(160, 100%, 37%, 1);
+  color: #ffd700;
 }
 
 .service-card h4 {
@@ -707,7 +701,7 @@ export default {
 }
 
 .calendar-header {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   padding: 1rem;
   display: flex;
@@ -768,13 +762,13 @@ export default {
 }
 
 .calendar-date.selected {
-  background: #007bff;
+  background: #667eea;
   color: white;
   font-weight: 600;
 }
 
 .calendar-date.today {
-  background: hsla(160, 100%, 37%, 1);
+  background: #ffd700;
   font-weight: 600;
 }
 
@@ -801,14 +795,14 @@ export default {
 }
 
 .time-slot:hover:not(:disabled) {
-  border-color: #007bff;
+  border-color: #667eea;
   background: #f0f8ff;
 }
 
 .time-slot.active {
-  background: #007bff;
+  background: #667eea;
   color: white;
-  border-color: #007bff;
+  border-color: #667eea;
 }
 
 .time-slot:disabled {
@@ -840,8 +834,8 @@ export default {
 
 .form-control:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 /* 预约摘要 */
@@ -850,7 +844,7 @@ export default {
   padding: 1.5rem;
   border-radius: 12px;
   margin: 2rem 0;
-  border-left: 4px solid #007bff;
+  border-left: 4px solid #667eea;
 }
 
 .appointment-summary h4 {
@@ -867,7 +861,7 @@ export default {
 .summary-item i {
   width: 20px;
   margin-right: 1rem;
-  color: #007bff;
+  color: #667eea;
 }
 
 /* 按钮样式 */
@@ -890,13 +884,13 @@ export default {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
 }
 
 .btn-primary:disabled {

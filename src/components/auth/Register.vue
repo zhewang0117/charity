@@ -91,7 +91,10 @@
               <div class="invalid-feedback">{{ errors.confirmPassword }}</div>
             </div>
             
-            <button type="submit" class="btn btn-primary w-100">Register</button>
+            <button type="submit" class="btn btn-primary w-100" :disabled="isSubmitting">
+              <span v-if="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              {{ isSubmitting ? 'Creating Account...' : 'Register' }}
+            </button>
             
             <div v-if="registerError" class="alert alert-danger mt-3">
               {{ registerError }}
@@ -291,23 +294,85 @@ const validateForm = () => {
 const isSubmitting = ref(false);
 
 const submitForm = async () => {
-  if (isSubmitting.value) return;
+  console.log('=== 开始注册流程 ===');
+  
+  if (isSubmitting.value) {
+    console.log('已在提交中，跳过...');
+    return;
+  }
   
   if (validateForm()) {
     isSubmitting.value = true;
+    registerError.value = ''; // 清除之前的错误
+    
+    console.log('表单验证通过，准备注册...');
+    console.log('表单数据:', form.value);
+    
     try {
-      const result = await authStore.register(form.value);
-       if (result?.success) {
-         router.push('/');
-       } else {
-         registerError.value = result.message || 'Registration failed';
-       }
+      console.log('调用 authStore.register...');
+      
+      // 使用 Promise.race 来处理超时
+      const registerPromise = authStore.register(form.value);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Registration timeout')), 8000)
+      );
+      
+      const result = await Promise.race([registerPromise, timeoutPromise]);
+      
+      console.log('注册返回结果:', result);
+      
+      if (result?.success) {
+        console.log('注册成功！立即跳转到主页...');
+        
+        // 立即停止加载状态
+        isSubmitting.value = false;
+        
+        // 显示成功消息
+        registerError.value = '';
+        
+        // 创建成功提示
+        const successDiv = document.createElement('div');
+        successDiv.className = 'alert alert-success mt-3';
+        successDiv.textContent = 'Registration successful! Redirecting to home page...';
+        const errorDiv = document.querySelector('.alert-danger');
+        if (errorDiv) {
+          errorDiv.parentNode.replaceChild(successDiv, errorDiv);
+        } else {
+          document.querySelector('form').appendChild(successDiv);
+        }
+        
+        // 立即跳转，不等待
+        console.log('执行页面跳转...');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 500); // 短暂延迟让用户看到成功消息
+        
+      } else {
+        console.error('注册失败:', result);
+        registerError.value = result?.message || 'Registration failed. Please try again.';
+        isSubmitting.value = false;
+      }
     } catch (error) {
-      registerError.value = error.message;
-    } finally {
+      console.error('注册过程中发生错误:', error);
+      
+      if (error.message === 'Registration timeout') {
+        // 即使超时，也检查是否实际注册成功了
+        console.log('超时了，但检查用户是否已创建...');
+        if (authStore.user) {
+          console.log('用户已创建，强制跳转');
+          isSubmitting.value = false;
+          window.location.href = '/';
+          return;
+        }
+        registerError.value = 'Registration is taking longer than expected. Please check if your account was created and try logging in.';
+      } else {
+        registerError.value = error.message || 'An unexpected error occurred. Please try again.';
+      }
+      
       isSubmitting.value = false;
     }
   } else {
+    console.log('表单验证失败');
     registerError.value = 'Please check and correct the errors in the form.';
   }
 };

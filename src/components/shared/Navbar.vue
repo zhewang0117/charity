@@ -40,17 +40,14 @@
                 <li><router-link class="dropdown-item" to="/medical-service">Medical Service</router-link></li>
                 <li><router-link class="dropdown-item" to="/housing-service">Housing Service</router-link></li>
                 <li><router-link class="dropdown-item" to="/resources">Resources</router-link></li>
-                <li><router-link class="dropdown-item" to="/map">Map</router-link></li>
+                <li><router-link class="dropdown-item" to="/map"><i class="fas fa-map-marked-alt" aria-hidden="true"></i> Service Map</router-link></li>
+                <li><router-link class="dropdown-item" to="/appointment-booking"><i class="fas fa-calendar-plus" aria-hidden="true"></i> Book Appointment</router-link></li>
+                <li><router-link class="dropdown-item" to="/activities"><i class="fas fa-calendar-alt" aria-hidden="true"></i> Activities</router-link></li>
+                <li><router-link class="dropdown-item" to="/dashboard"><i class="fas fa-chart-line" aria-hidden="true"></i> Analytics Dashboard</router-link></li>
               </ul>
             </li>
             <li class="nav-item" v-if="isAuthenticated && user.role === 'beneficiary'">
               <router-link class="nav-link" to="/resources">RESOURCES</router-link>
-            </li>
-            <li class="nav-item" v-if="isAuthenticated">
-              <router-link class="nav-link" to="/map">MAP</router-link>
-            </li>
-            <li class="nav-item" v-if="isAuthenticated">
-              <router-link class="nav-link" to="/staff">STAFF</router-link>
             </li>
             <li class="nav-item dropdown">
               <button class="nav-link dropdown-toggle btn-link" id="getHelpDropdown" aria-haspopup="true" :aria-expanded="false" @click="toggleDropdown('getHelpDropdown')" @keydown.enter.prevent="toggleDropdown('getHelpDropdown')">
@@ -64,16 +61,16 @@
             <li class="nav-item" v-if="isAuthenticated && user.role === 'volunteer'">
               <router-link class="nav-link" to="/volunteer-hub">VOLUNTEER HUB</router-link>
             </li>
-            <li class="nav-item" v-if="isAuthenticated && user.role === 'admin'">
-              <router-link class="nav-link" to="/admin/activities">Manage Activities</router-link>
-            </li>
             <li class="nav-item dropdown">
               <button class="nav-link dropdown-toggle btn-link" id="aboutUsDropdown" aria-haspopup="true" :aria-expanded="false" @click="toggleDropdown('aboutUsDropdown')" @keydown.enter.prevent="toggleDropdown('aboutUsDropdown')">
                 <span>ABOUT US</span>
               </button>
               <ul class="dropdown-menu" aria-labelledby="aboutUsDropdown">
-                <li><router-link class="dropdown-item" to="/staff">Staff</router-link></li>
+                <li><router-link class="dropdown-item" to="/staff"><i class="fas fa-users" aria-hidden="true"></i> Staff</router-link></li>
               </ul>
+            </li>
+            <li class="nav-item" v-if="isAuthenticated">
+              <router-link class="nav-link" to="/admin-dashboard">ADMIN DASHBOARD</router-link>
             </li>
           </ul>
           <ul class="navbar-nav">
@@ -141,17 +138,16 @@ const toggleNavbar = () => {
   isNavbarCollapsed.value = !isNavbarCollapsed.value;
 };
 
-// simple dropdown toggle helper for keyboard accessibility (non-Bootstrap fallback)
+// simple dropdown toggle helper for keyboard accessibility
 const openDropdowns = ref({});
 const toggleDropdown = (id) => {
   openDropdowns.value[id] = !openDropdowns.value[id];
-  // update aria-expanded attribute on the toggle button
   const btn = document.getElementById(id);
   if (btn) btn.setAttribute('aria-expanded', openDropdowns.value[id] ? 'true' : 'false');
 };
 
 const handleResize = () => {
-  if (window.innerWidth >= 992) { // lg breakpoint
+  if (window.innerWidth >= 992) { 
     isNavbarCollapsed.value = true;
   }
 };
@@ -174,7 +170,7 @@ console.log('Navbar isAuthenticated:', isAuthenticated.value, 'user:', user.valu
 }
 
 .page-header {
-  padding-top: 80px; /* Adjust based on navbar height */
+  padding-top: 80px; 
 }
 
 .navbar-logo {

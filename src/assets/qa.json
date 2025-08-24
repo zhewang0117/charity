@@ -1,0 +1,104 @@
+{
+  "faqs": [
+    {
+      "id": 1,
+      "question": "How do I create an account?",
+      "keywords": ["register", "sign up", "create account", "new account", "registration"],
+      "answer": "Click the 'Register' button in the top right corner of the page. Fill in your name, email, password, and select your role (seeking help or volunteer), then click register to complete your registration."
+    },
+    {
+      "id": 2,
+      "question": "How do I log in?",
+      "keywords": ["login", "sign in", "log in", "access account"],
+      "answer": "Click the 'Login' button on the homepage, enter your registered email and password, then click login."
+    },
+    {
+      "id": 3,
+      "question": "What if I forgot my password?",
+      "keywords": ["forgot password", "reset password", "password recovery", "lost password"],
+      "answer": "Currently, you can contact our customer service team to reset your password. We are developing a self-service password reset feature, please stay tuned."
+    },
+    {
+      "id": 4,
+      "question": "How do I apply for food services?",
+      "keywords": ["food", "food service", "food assistance", "meals", "nutrition"],
+      "answer": "After logging in, select 'Food Service' from the main navigation bar. You can view available food assistance programs and submit applications."
+    },
+    {
+      "id": 5,
+      "question": "How do I apply for housing assistance?",
+      "keywords": ["housing", "shelter", "accommodation", "housing service", "rent"],
+      "answer": "On the 'Housing Service' page, you can browse available housing assistance programs, including temporary shelters and rental subsidies."
+    },
+    {
+      "id": 6,
+      "question": "How do I access medical services?",
+      "keywords": ["medical", "healthcare", "doctor", "clinic", "health", "medical service"],
+      "answer": "Visit the 'Medical Service' page where you can find information about nearby medical facilities, free clinics, and medical assistance programs."
+    },
+    {
+      "id": 7,
+      "question": "How do I become a volunteer?",
+      "keywords": ["volunteer", "help others", "volunteering", "community service"],
+      "answer": "Select 'Volunteer' when registering, or visit the 'Volunteer Service' page to learn about various volunteer opportunities and sign up for projects that suit you."
+    },
+    {
+      "id": 8,
+      "question": "How can I donate to support the cause?",
+      "keywords": ["donate", "donation", "support", "contribute", "funding"],
+      "answer": "Visit the 'Support Us' page where you can choose to make a one-time donation or set up recurring donations to support our work."
+    },
+    {
+      "id": 9,
+      "question": "How do I get emergency help?",
+      "keywords": ["emergency", "urgent", "crisis", "immediate help", "24/7"],
+      "answer": "If you encounter an emergency situation, please visit the 'Emergency Help' page to view 24-hour hotline numbers and emergency service information."
+    },
+    {
+      "id": 10,
+      "question": "How do I get career assistance?",
+      "keywords": ["job", "career", "employment", "work", "job search", "resume"],
+      "answer": "On the 'Career Assistance' page, you can find job guidance, resume editing, interview training, and other employment support services."
+    },
+    {
+      "id": 11,
+      "question": "How do I update my personal information?",
+      "keywords": ["update", "edit", "profile", "personal info", "change details"],
+      "answer": "After logging in, click on your user avatar and select 'Edit Profile' to update your personal information."
+    },
+    {
+      "id": 12,
+      "question": "Are the services free?",
+      "keywords": ["free", "cost", "price", "payment", "fees"],
+      "answer": "Yes, all basic services we provide for immigrants and refugees are free, including food, housing, medical, and employment assistance."
+    },
+    {
+      "id": 13,
+      "question": "How do I contact customer support?",
+      "keywords": ["contact", "support", "help", "customer service", "assistance"],
+      "answer": "You can contact us through the contact information at the bottom of the page, or send an email to our customer service email address."
+    },
+    {
+      "id": 14,
+      "question": "What is CareNexus?",
+      "keywords": ["carenexus", "about", "what is", "platform", "organization"],
+      "answer": "CareNexus is a comprehensive service platform specifically designed for immigrants and refugees, providing food assistance, housing support, medical services, career guidance, and many other services."
+    },
+    {
+      "id": 15,
+      "question": "How do I view the map services?",
+      "keywords": ["map", "location", "nearby", "directions", "find"],
+      "answer": "Click on the 'Map' option in the navigation bar to view the locations and contact information of nearby service organizations."
+    }
+  ],
+  "defaultResponses": [
+    "Sorry, I didn't understand your question. You can try describing it in a different way, or check our frequently asked questions.",
+    "You can try rephrasing your question, or contact our customer service team for more detailed help.",
+    "I'm sorry, I couldn't find relevant information. I suggest you check our help page or contact customer service."
+  ],
+  "greetings": [
+    "Hello! I'm the CareNexus assistant, happy to help you!",
+    "Welcome to CareNexus! I can help answer questions about our services.",
+    "Hi there! How can I assist you today?"
+  ]
+}

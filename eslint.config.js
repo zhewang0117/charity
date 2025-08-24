@@ -21,8 +21,26 @@ export default defineConfig([
     },
   },
 
+  // Node.js files configuration
+  {
+    files: ['functions/**/*.js', 'server.cjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+
   js.configs.recommended,
   ...pluginVue.configs['flat/essential'],
   ...pluginOxlint.configs['flat/recommended'],
   skipFormatting,
+  
+  // Custom rules
+  {
+    rules: {
+      'vue/multi-word-component-names': 'warn', // 降级为警告而不是错误
+      'no-unused-vars': 'warn', // 降级为警告
+    },
+  },
 ])
