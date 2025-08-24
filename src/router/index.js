@@ -92,7 +92,7 @@ const routes = [
     path: '/volunteer-hub',
     name: 'volunteer-hub',
     component: () => import('@/components/views/VolunteerHub.vue'),
-    meta: { requiresAuth: true, requiredRole: 'volunteer' }
+    meta: { requiresAuth: true }
   },
   {
     path: '/profile',

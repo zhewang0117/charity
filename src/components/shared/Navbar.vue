@@ -31,6 +31,18 @@
                 <li><button class="dropdown-item btn-link" @click.prevent> <i class="fas fa-handshake" aria-hidden="true"></i> <span>Partner</span></button></li>
               </ul>
             </li>
+            <li class="nav-item dropdown" v-if="isAuthenticated">
+              <button class="nav-link dropdown-toggle btn-link" id="servicesDropdown" aria-haspopup="true" :aria-expanded="false" @click="toggleDropdown('servicesDropdown')" @keydown.enter.prevent="toggleDropdown('servicesDropdown')">
+                <span>SERVICES</span>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
+                <li><router-link class="dropdown-item" to="/food-service">Food Service</router-link></li>
+                <li><router-link class="dropdown-item" to="/medical-service">Medical Service</router-link></li>
+                <li><router-link class="dropdown-item" to="/housing-service">Housing Service</router-link></li>
+                <li><router-link class="dropdown-item" to="/resources">Resources</router-link></li>
+                <li><router-link class="dropdown-item" to="/map">Map</router-link></li>
+              </ul>
+            </li>
             <li class="nav-item" v-if="isAuthenticated && user.role === 'beneficiary'">
               <router-link class="nav-link" to="/resources">RESOURCES</router-link>
             </li>
