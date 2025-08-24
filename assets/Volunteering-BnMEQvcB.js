@@ -1,0 +1,1 @@
+import{_ as n,c as t,a as s,o as a}from"./index-BRLyiLg5.js";const r={name:"CareerAssistance"};function o(c,e,l,i,p,u){return a(),t("div",null,e[0]||(e[0]=[s("h1",null,"volunteering",-1),s("p",null,"This is the career assistance page.",-1)]))}const d=n(r,[["render",o]]);export{d as default};
